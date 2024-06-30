@@ -41,7 +41,12 @@ class NetworkAdapter:
 
     def mark_suspicious(self, reason):
         self.network['Suspicious'] = True
-        self.network['Reason'] = reason
+        if 'Reason' in self.network:
+            existing_reasons = self.network['Reason'].split('; ')
+            if reason not in existing_reasons:
+                self.network['Reason'] += f"; {reason}"
+        else:
+            self.network['Reason'] = reason
 
 # Factory pattern
 class NetworkFactory:
@@ -51,7 +56,7 @@ class NetworkFactory:
 
 # Concurrency pattern
 class NetworkScanner(threading.Thread):
-    HAK5_MAC_PREFIXES = ['00:13:37', '02:CA:FF']
+    HAK5_MAC_PREFIXES = ['00:13:37', '02:CA:FF', '02:13:37']
 
     def __init__(self, networks, observer):
         threading.Thread.__init__(self)
@@ -76,25 +81,25 @@ class NetworkScanner(threading.Thread):
 
         with self.lock:
             # Check for short or unusual SSID names
-            if len(ssid) < 3 and address not in self.seen_addresses:
+            if len(ssid) < 3:
                 network.mark_suspicious('Short or unusual SSID name')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
             # Check for open networks
-            if encryption == 'Open' and address not in self.seen_addresses:
+            if encryption == 'Open':
                 network.mark_suspicious('Open network')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
             # Check for weak encryption
-            if encryption == 'WEP' and address not in self.seen_addresses:
+            if encryption == 'WEP':
                 network.mark_suspicious('Weak encryption (WEP)')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
             # Check for hidden SSID
-            if not ssid and address not in self.seen_addresses:
+            if not ssid:
                 network.mark_suspicious('Hidden SSID')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
@@ -102,7 +107,7 @@ class NetworkScanner(threading.Thread):
             # Check for abnormally high signal strength
             try:
                 signal_strength_value = int(signal_strength)
-                if signal_strength_value > -30 and address not in self.seen_addresses:
+                if signal_strength_value > -30:
                     network.mark_suspicious('Abnormally high signal strength')
                     self.observer.update(network.network)
                     self.seen_addresses.add(address)
@@ -110,14 +115,19 @@ class NetworkScanner(threading.Thread):
                 pass  # Ignore invalid signal strength values
 
             # Check for unusual channels
-            if channel not in map(str, range(1, 12)) and address not in self.seen_addresses:
+            if channel not in map(str, range(1, 12)):
                 network.mark_suspicious('Unusual channel')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
             # Manually check for known Hak5 MAC address prefixes
-            if any(address.startswith(prefix) for prefix in self.HAK5_MAC_PREFIXES) and address not in self.seen_addresses:
-                network.mark_suspicious('Possible WiFi Pineapple device (Hak5 MAC prefix)')
+            if any(address.startswith(prefix) for prefix in self.HAK5_MAC_PREFIXES):
+                network.mark_suspicious('Possible WiFi Pineapple device')
+                self.observer.update(network.network)
+                self.seen_addresses.add(address)
+
+            if ssid.startswith("Pineapple"):
+                network.mark_suspicious('Possible WiFi Pineapple device')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
@@ -146,15 +156,3 @@ def detect_suspicious_networks(networks):
     scanner.start()
     scanner.join()
     return observer.suspicious_networks
-
-# Example usage
-if __name__ == "__main__":
-    sample_networks = [
-        {'ESSID': 'FreeWiFi', 'Encryption': 'Open', 'Address': '00:13:37:AA:BB:CC', 'Channel': '6', 'Signal': '-20', 'Manufacturer': 'Unknown'},
-        {'ESSID': '', 'Encryption': 'Open', 'Address': '11:22:33:44:55:66', 'Channel': '13', 'Signal': '-40', 'Manufacturer': 'Unknown'},
-        {'ESSID': 'Short', 'Encryption': 'WEP', 'Address': '77:88:99:00:AA:BB', 'Channel': '7', 'Signal': '-80', 'Manufacturer': 'Unknown'}
-    ]
-    
-    suspicious_networks = detect_suspicious_networks(sample_networks)
-    for net in suspicious_networks:
-        print(net)

@@ -1,15 +1,20 @@
 from parse_oui_database import lookup_manufacturer
 
 def parse_networks(scan_output):
-    networks = []
+    networks = {}
     lines = scan_output.split('\n')
     current_network = {}
-    
+
     for line in lines:
         line = line.strip()
         if line.startswith('Cell'):
             if current_network:
-                networks.append(current_network)
+                address = current_network['Address']
+                # Update existing entry if already exists
+                if address in networks:
+                    networks[address].update(current_network)
+                else:
+                    networks[address] = current_network
                 current_network = {}
             address = line.split()[4]
             current_network['Address'] = address
@@ -35,10 +40,15 @@ def parse_networks(scan_output):
             current_network['ESSID'] = essid
         elif 'Mode' in line:
             mode = line.split(':')[1].strip()
+            if mode == 'Unknown/bug':
+                mode = 'Unknown'
             current_network['Mode'] = mode
-        
 
     if current_network:
-        networks.append(current_network)
-    
-    return networks
+        address = current_network['Address']
+        if address in networks:
+            networks[address].update(current_network)
+        else:
+            networks[address] = current_network
+
+    return list(networks.values())
