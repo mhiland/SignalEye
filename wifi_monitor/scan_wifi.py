@@ -7,3 +7,7 @@ def scan_wifi():
     except subprocess.TimeoutExpired:
         print("iwlist scan timed out.")
         return ""
+
+if __name__ == "__main__":
+    result = scan_wifi()
+    print(result)

@@ -1,3 +1,5 @@
+import logging 
+import logging_config
 from datetime import datetime
 
 def update_networks_list(persistent_networks, current_networks):
@@ -20,6 +22,7 @@ def update_networks_list(persistent_networks, current_networks):
             current_net['Last Seen'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             current_net['First Seen'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             persistent_networks.append(current_net)
+            logging.info(f"New network detected: {current_net['ESSID']} {current_net['Address']}")
         elif 'ESSID' in current_net and current_net['ESSID'] in persistent_essids:
             for net in persistent_networks:
                 if net['ESSID'] == current_net['ESSID']:

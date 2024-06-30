@@ -45,6 +45,7 @@ def print_networks2(networks):
     max_manufacturer_length = 27
     print(f"{'SSID':<30} {'Address':<20} {'Manufacturer':<30} {'Frequency':<10} {'Channel':<8} {'Quality':<8} {'Signal Level':<12} {'Encryption':<10} {'Mode':<8} {'Active':<8} {'First Seen':<20} {'Last Seen':<20}")
     print('-' * 150)
+    seen_addresses = set()
     for net in networks:
         ssid = net.get('ESSID', '')
         address = net.get('Address', 'Unknown')
@@ -58,7 +59,9 @@ def print_networks2(networks):
         active = net.get('Active', False)
         first_seen = net.get('First Seen', 'Never')
         last_seen = net.get('Last Seen', 'Never')
-        print(f"{ssid:<30} {address:<20} {manufacturer:<30} {frequency:<10} {channel:<8} {quality:<8} {signal_level:<12} {encryption:<10} {mode:<8} {str(active):<8} {first_seen:<20} {last_seen:<20}")
+        if (ssid, address) not in seen_addresses:
+            print(f"{ssid:<30} {address:<20} {manufacturer:<30} {frequency:<10} {channel:<8} {quality:<8} {signal_level:<12} {encryption:<10} {mode:<8} {str(active):<8} {first_seen:<20} {last_seen:<20}")
+            seen_addresses.add((ssid, address))
 
 
 def print_suspicious_networks(networks):
