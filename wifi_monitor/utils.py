@@ -40,7 +40,38 @@ def print_networks(networks):
     print("\nOlder networks:")
     print_networks2(remaining_networks)
 
+class NetworkAdapter:
+    def __init__(self, details):
+        self.details = details
 
+    def get_encryption(self):
+        encryption_info = self.details.get('Encryption Info', {})
+        encryption_status = encryption_info.get('Encryption', 'Unknown')
+        
+        if encryption_status == 'Enabled':
+            encryption_types = []
+            
+            wpa3_info = encryption_info.get('WPA3')
+            wpa2_info = encryption_info.get('WPA2')
+            wpa_info = encryption_info.get('WPA')
+            wep_info = encryption_info.get('WEP')
+
+            if wpa3_info is not None:
+                encryption_types.append("WPA3")            
+            if wpa2_info is not None:
+                encryption_types.append("WPA2")
+            if wpa_info is not None:
+                encryption_types.append("WPA")
+            if wep_info is not None and wep_info == "Enabled":
+                encryption_types.append("WEP")
+                
+            if encryption_types:
+                return ",".join(encryption_types)
+            else:
+                return "Unknown"
+        else:
+            return "Open"
+        
 def print_networks2(networks):
     max_manufacturer_length = 27
     print(f"{'SSID':<30} {'Address':<20} {'Manufacturer':<30} {'Frequency':<10} {'Channel':<8} {'Quality':<8} {'Signal Level':<12} {'Encryption':<10} {'Mode':<8} {'Active':<8} {'First Seen':<20} {'Last Seen':<20}")
@@ -53,8 +84,9 @@ def print_networks2(networks):
         frequency = net.get('Frequency', 'Unknown')
         channel = net.get('Channel', 'Unknown')
         quality = net.get('Quality', 'Unknown')
-        signal_level = net.get('Signal level', 'Unknown')
-        encryption = net.get('Encryption', 'Unknown')
+        signal_level = net.get('Signal Level', 'Unknown')
+        network = NetworkAdapter(net)
+        encryption = network.get_encryption()
         mode = net.get('Mode', 'Unknown')
         active = net.get('Active', False)
         first_seen = net.get('First Seen', 'Never')

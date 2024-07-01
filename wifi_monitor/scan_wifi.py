@@ -11,3 +11,5 @@ def scan_wifi():
 if __name__ == "__main__":
     result = scan_wifi()
     print(result)
+    with open('scan.out', 'w') as file:
+        file.write(result)

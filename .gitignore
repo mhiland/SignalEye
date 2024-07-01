@@ -5,3 +5,4 @@ __pycache__/
 persistent_networks.json*
 *.log
 *.bk
+scan.out

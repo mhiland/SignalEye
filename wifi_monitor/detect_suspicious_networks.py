@@ -25,7 +25,27 @@ class NetworkAdapter:
         return self.network.get('ESSID', '')
 
     def get_encryption(self):
-        return self.network.get('Encryption', 'Unknown')
+        encryption_info = self.network.get('Encryption Info', {})
+        encryption_status = encryption_info.get('Encryption', 'Unknown')
+        
+        if encryption_status == 'Enabled':
+            wpa3_info = encryption_info.get('WPA3')
+            wpa2_info = encryption_info.get('WPA2')
+            wpa_info = encryption_info.get('WPA')
+            wep_info = encryption_info.get('WEP')
+
+            if wpa3_info:
+                return "WPA3"            
+            elif wpa2_info:
+                return "WPA2"
+            elif wpa_info:
+                return "WPA"
+            elif wep_info == "Enabled":
+                return "WEP"
+            else:
+                return "Unknown"
+        else:
+            return "Open"
 
     def get_address(self):
         return self.network.get('Address', 'Unknown')
@@ -57,6 +77,7 @@ class NetworkFactory:
 # Concurrency pattern
 class NetworkScanner(threading.Thread):
     HAK5_MAC_PREFIXES = ['00:13:37', '02:CA:FF', '02:13:37']
+    RASPBERRY_MAC_PREFIXES = ['28:CD:C1', 'B8:27:EB', 'D8:3A:DD', 'DC:A6:32', 'E4:5F:01', '2C:CF:67']
 
     def __init__(self, networks, observer):
         threading.Thread.__init__(self)
@@ -80,8 +101,13 @@ class NetworkScanner(threading.Thread):
         signal_strength = network.get_signal_strength()
 
         with self.lock:
+            # Check for hidden SSID
+            if not ssid:
+                network.mark_suspicious('Hidden SSID')
+                self.observer.update(network.network)
+                self.seen_addresses.add(address)
             # Check for short or unusual SSID names
-            if len(ssid) < 3:
+            elif len(ssid) < 3:
                 network.mark_suspicious('Short or unusual SSID name')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
@@ -95,12 +121,6 @@ class NetworkScanner(threading.Thread):
             # Check for weak encryption
             if encryption == 'WEP':
                 network.mark_suspicious('Weak encryption (WEP)')
-                self.observer.update(network.network)
-                self.seen_addresses.add(address)
-
-            # Check for hidden SSID
-            if not ssid:
-                network.mark_suspicious('Hidden SSID')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
