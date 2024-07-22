@@ -1,3 +1,4 @@
+import os
 import re
 import json
 from parse_oui_database import lookup_manufacturer
@@ -92,7 +93,10 @@ def parse_networks(data):
     return networks
 
 if __name__ == "__main__":
-    with open('scan.out', 'r') as file:
+    APP_DIR = os.path.dirname(os.path.abspath(__file__))
+    LOG_DIR = os.path.join(APP_DIR, 'logs')
+    SCAN_FILE = os.path.join(LOG_DIR, 'scan.out')
+    with open(SCAN_FILE, 'r') as file:
         network_data = file.read()
     parsed_networks = parse_networks(network_data)
     print(json.dumps(parsed_networks, indent=4))

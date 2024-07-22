@@ -1,8 +1,9 @@
 import os
 import json
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-PERSISTENT_FILE = os.path.join(current_dir, 'persistent_networks.json')
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_DIR = os.path.join(APP_DIR, 'logs')
+PERSISTENT_FILE = os.path.join(LOG_DIR, 'persistent_networks.json')
 
 def load_persistent_networks():
     if os.path.exists(PERSISTENT_FILE):

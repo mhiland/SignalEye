@@ -4,7 +4,7 @@
 SERVICE_NAME="wifi_monitor"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPT_PATH="${SCRIPT_DIR}/${SERVICE_NAME}_service.py"
+SCRIPT_PATH="${SCRIPT_DIR}/../backend/wifi_monitor/${SERVICE_NAME}_service.py"
 LOG_DIR="/var/log/${SERVICE_NAME}"
 LOG_FILE="${LOG_DIR}/${SERVICE_NAME}.log"
 
@@ -36,7 +36,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/python3 ${SCRIPT_PATH}
-WorkingDirectory=/home/mhiland/Projects/RedCanary/wifi_monitor
+WorkingDirectory=/home/mhiland/Projects/RedCanary/backend/wifi_monitor
 Restart=always
 User=mhiland
 Group=mhiland

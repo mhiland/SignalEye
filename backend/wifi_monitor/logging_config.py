@@ -1,8 +1,10 @@
 import os
 import logging
 
-LOG_DIR = os.path.dirname(os.path.abspath(__file__))
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_DIR = os.path.join(APP_DIR, 'logs')
 LOG_FILE = os.path.join(LOG_DIR, 'wifi_monitor.log')
+os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 

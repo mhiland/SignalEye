@@ -1,8 +1,10 @@
-__pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 
 persistent_networks.json*
-*.log
 *.bk
 scan.out
+
+**/logs/
+*.log

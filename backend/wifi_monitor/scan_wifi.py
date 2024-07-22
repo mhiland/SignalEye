@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 def scan_wifi():
@@ -11,5 +12,8 @@ def scan_wifi():
 if __name__ == "__main__":
     result = scan_wifi()
     print(result)
-    with open('scan.out', 'w') as file:
+    APP_DIR = os.path.dirname(os.path.abspath(__file__))
+    LOG_DIR = os.path.join(APP_DIR, 'logs')
+    SCAN_FILE = os.path.join(LOG_DIR, 'scan.out')
+    with open(SCAN_FILE, 'w') as file:
         file.write(result)

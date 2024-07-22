@@ -16,7 +16,7 @@ def parse_oui_database(file_path):
 
 # Initialize the OUI dictionary by parsing the file once
 current_dir = os.path.dirname(os.path.abspath(__file__))
-OUI_FILE = os.path.join(current_dir, 'oui.txt')
+OUI_FILE = os.path.join(current_dir, 'data', 'oui.txt')
 parse_oui_database(OUI_FILE)
 
 # Lookup the manufacturer using the parsed OUI database
