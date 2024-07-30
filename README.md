@@ -1,35 +1,26 @@
 
-## Background Service
-
-### Install Tools
-> sudo apt install python3-daemon
-
-### Setup Service
-> sudo chmod +x /backend/wifi_monitor/wifi_monitor.py
-> chmod +x create_wifi_monitor_service.sh
-> ./create_wifi_monitor_service.sh
-
-### Check the status of the service
-
-> sudo systemctl status wifi_monitor.service
-
-### Debugging
-
-To debug, check the log file at /var/log/wifi_monitor/wifi_monitor.log for any errors or messages that can help pinpoint the issue.
-
-> sudo tail -f /var/log/wifi_monitor/wifi_monitor.log
 
 
 ## Docker
 
-### Build
+### Backend
 
-> docker build -f docker/dockerfile -t wifi_monitor_image .
+#### Build
 
-### Run
-> docker run --net=host --cap-add=NET_ADMIN --cap-add=NET_RAW -d --name wifi_monitor_container -v /var/log/wifi_monitor:/app/backend/wifi_monitor/logs wifi_monitor_image
+> docker build -f docker/backend.dockerfile -t wifi_monitor_backend .
+
+#### Run
+> docker run --net=host --cap-add=NET_ADMIN --cap-add=NET_RAW -d --name wifi_monitor_backend -v /var/log/wifi_monitor:/app/backend/wifi_monitor/logs wifi_monitor_backend
 
 
-### Debug
+#### Debug
 
 > docker exec -it wifi_monitor_container /bin/bash
+
+### Frontend
+
+#### Build
+> docker build -f docker/frontend.dockerfile -t wifi_monitor_frontend .
+
+#### Run
+> docker run -p 5000:5000 -d --name wifi_monitor_frontend -v /var/log/wifi_monitor:/var/log/wifi_monitor wifi_monitor_frontend

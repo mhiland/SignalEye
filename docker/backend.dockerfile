@@ -3,10 +3,9 @@ FROM python:3.11-slim AS build
 
 WORKDIR /app
 
-COPY requirements.txt .
 COPY backend/wifi_monitor /app/backend/wifi_monitor
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/wifi_monitor/requirements.txt
 
 RUN python -m compileall /app/backend/wifi_monitor
 
