@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        setTimeout(function(){
+            window.location.reload(1);
+        }, 10000);
+    </script>
+</head>
+<body>
+    <h1>Persistent Networks Data</h1>
+    <a href="/download">Download JSON</a>
+    <table>
+        <thead>
+            <tr>
+                <th>ESSID</th>
+                <th>Address</th>
+                <th>Manufacturer</th>
+                <th>Frequency</th>
+                <th>Channel</th>
+                <th>Quality</th>
+                <th>Signal Level</th>
+                <th>Mode</th>
+                <th>Encryption</th>
+                <th>Active</th>
+                <th>Last Seen</th>
+                <th>First Seen</th>
+                <th>Suspicious</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for network in networks %}
+            <tr>
+                <td>{{ network.get('ESSID', '') }}</td>
+                <td>{{ network.get('Address', '') }}</td>
+                <td>{{ network.get('Manufacturer', '') }}</td>
+                <td>{{ network.get('Frequency', '') }}</td>
+                <td>{{ network.get('Channel', '') }}</td>
+                <td>{{ network.get('Quality', '') }}</td>
+                <td>{{ network.get('Signal Level', '') }}</td>
+                <td>{{ network.get('Mode', '') }}</td>
+                <td>
+                    {% set encryption_info = network.get('Encryption Info', {}) %}
+                    {% if encryption_info.get('Encryption') == 'Enabled' %}
+                        Enabled 
+                        {% if encryption_info.get('WPA2') %}
+                            (WPA2: {{ encryption_info.get('WPA2', {}).get('Authentication Suites', '') }})
+                        {% endif %}
+                    {% elif encryption_info.get('Encryption') == 'Open' %}
+                        Open
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>{{ network.get('Active', False) }}</td>
+                <td>{{ network.get('Last Seen', '') }}</td>
+                <td>{{ network.get('First Seen', '') }}</td>
+                <td>{{ network.get('Suspicious', False) }}</td>
+                <td>{{ network.get('Reason', '') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

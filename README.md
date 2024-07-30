@@ -27,7 +27,7 @@ To debug, check the log file at /var/log/wifi_monitor/wifi_monitor.log for any e
 > docker build -f docker/dockerfile -t wifi_monitor_image .
 
 ### Run
-> docker run --net=host --cap-add=NET_ADMIN --cap-add=NET_RAW -d --name wifi_monitor_container -v /var/log/wifi_monitor:/var/log/wifi_monitor wifi_monitor_image
+> docker run --net=host --cap-add=NET_ADMIN --cap-add=NET_RAW -d --name wifi_monitor_container -v /var/log/wifi_monitor:/app/backend/wifi_monitor/logs wifi_monitor_image
 
 
 ### Debug
