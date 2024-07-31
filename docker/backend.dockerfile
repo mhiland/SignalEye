@@ -16,10 +16,8 @@ RUN apt-get update && \
     apt-get install -y iw wireless-tools iproute2 net-tools && \
     rm -rf /var/lib/apt/lists/*
 
-ENV LOG_DIR=/var/log/wifi_monitor
-
 RUN mkdir -p /app/backend/wifi_monitor
-RUN mkdir -p ${LOG_DIR}
+RUN mkdir -p /var/log/wifi_monitor
 
 WORKDIR /app
 

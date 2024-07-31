@@ -2,8 +2,7 @@ import os
 import logging
 import sys
 
-APP_DIR = os.path.dirname(os.path.abspath(__file__))
-LOG_DIR = os.path.join(APP_DIR, 'logs')
+LOG_DIR = os.path.join('/', 'var', 'log', 'wifi_monitor')
 LOG_FILE = os.path.join(LOG_DIR, 'wifi_monitor.log')
 LOG_FORMAT = '%(asctime)s:%(levelname)s:%(message)s'
 

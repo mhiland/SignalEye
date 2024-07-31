@@ -12,8 +12,7 @@ def scan_wifi():
 if __name__ == "__main__":
     result = scan_wifi()
     print(result)
-    APP_DIR = os.path.dirname(os.path.abspath(__file__))
-    LOG_DIR = os.path.join(APP_DIR, 'logs')
+    LOG_DIR = os.path.join('/', 'var', 'log', 'wifi_monitor')
     SCAN_FILE = os.path.join(LOG_DIR, 'scan.out')
     with open(SCAN_FILE, 'w') as file:
         file.write(result)

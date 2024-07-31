@@ -93,8 +93,7 @@ def parse_networks(data):
     return networks
 
 if __name__ == "__main__":
-    APP_DIR = os.path.dirname(os.path.abspath(__file__))
-    LOG_DIR = os.path.join(APP_DIR, 'logs')
+    LOG_DIR = os.path.join('/', 'var', 'log', 'wifi_monitor')
     SCAN_FILE = os.path.join(LOG_DIR, 'scan.out')
     with open(SCAN_FILE, 'r') as file:
         network_data = file.read()

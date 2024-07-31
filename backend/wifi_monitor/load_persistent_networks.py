@@ -1,8 +1,7 @@
 import os
 import json
 
-APP_DIR = os.path.dirname(os.path.abspath(__file__))
-LOG_DIR = os.path.join(APP_DIR, 'logs')
+LOG_DIR = os.path.join('/', 'var', 'log', 'wifi_monitor')
 PERSISTENT_FILE = os.path.join(LOG_DIR, 'persistent_networks.json')
 
 def load_persistent_networks():
