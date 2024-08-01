@@ -32,3 +32,12 @@
 
 #### Run
 > docker run --net=host --cap-add=NET_ADMIN --cap-add=NET_RAW -p 5000:5000 -d --name wifi_monitor_bundled -v /var/log/wifi_monitor:/var/log/wifi_monitor wifi_monitor_bundled
+
+
+## Docker Compose
+> docker-compose up -d
+
+
+
+## Test
+> python -m unittest discover tests

@@ -5,17 +5,18 @@ import sys
 LOG_DIR = os.path.join('/', 'var', 'log', 'wifi_monitor')
 LOG_FILE = os.path.join(LOG_DIR, 'wifi_monitor.log')
 LOG_FORMAT = '%(asctime)s:%(levelname)s:%(message)s'
-
-os.makedirs(LOG_DIR, exist_ok=True)
+ENABLE_FILE_LOGGING = not os.environ.get('UNIT_TESTING', False)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-file_handler = logging.FileHandler(LOG_FILE)
-file_handler.setLevel(logging.INFO)
-file_formatter = logging.Formatter(LOG_FORMAT)
-file_handler.setFormatter(file_formatter)
-logger.addHandler(file_handler)
+if ENABLE_FILE_LOGGING:
+    os.makedirs(LOG_DIR, exist_ok=True)
+    file_handler = logging.FileHandler(LOG_FILE)
+    file_handler.setLevel(logging.INFO)
+    file_formatter = logging.Formatter(LOG_FORMAT)
+    file_handler.setFormatter(file_formatter)
+    logger.addHandler(file_handler)
 
 stream_handler = logging.StreamHandler(sys.stdout)
 stream_handler.setLevel(logging.INFO)
