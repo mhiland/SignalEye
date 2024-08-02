@@ -1,12 +1,17 @@
+"""
+This module contains tests for the frontend application.
+"""
+
 import unittest
-from flask import Flask, render_template, send_file
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../frontend')))
-from app import app, networks_data, DATA_FILE
+from app import app
 
 class FlaskAppTestCase(unittest.TestCase):
-    
+    """
+    Test cases for the frontend application.
+    """
     @classmethod
     def setUpClass(cls):
         cls.app = app.test_client()
@@ -14,6 +19,7 @@ class FlaskAppTestCase(unittest.TestCase):
     
     def test_index_route(self):
         response = self.app.get('/')
+        
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.data) > 0) 
         self.assertIn(b'<!DOCTYPE html>', response.data)        

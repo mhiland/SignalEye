@@ -41,3 +41,9 @@
 
 ## Test
 > python -m unittest discover tests
+
+
+## Pylint
+Run pylint manually
+> pip install pre-commit
+pylint $(git ls-files '*.py')

@@ -1,16 +1,19 @@
+"""
+This module contains tests for updating the network list.
+"""
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from datetime import datetime
 import sys
 import os
 os.environ['UNIT_TESTING'] = 'True'
-import logging
-# Ensure correct path insertion for importing modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../backend/wifi_monitor/')))
 from update_networks_list import update_networks_list
 
 class TestUpdateNetworksList(unittest.TestCase):
-
+    """
+    Test cases for updating the network list functionality.
+    """
     def setUp(self):
         self.persistent_networks = [
             {'ESSID': 'Network1', 'Address': '00:11:22:33:44:55', 'info': 'persistent info'},
