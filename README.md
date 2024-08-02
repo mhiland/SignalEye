@@ -37,12 +37,13 @@
 ## Docker Compose
 > docker-compose up -d
 
-
-
 ## Test
 > python -m unittest discover tests
-
 
 ## Pylint
 Run pylint manually
 > pylint $(git ls-files '*.py')
+
+## autopep8
+autopep8 can automatically fix trailing whitespace issues along with other PEP 8 formatting issues.
+> autopep8 --in-place --aggressive --aggressive --recursive .

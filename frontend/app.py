@@ -12,13 +12,19 @@ if os.path.exists(DATA_FILE):
 else:
     networks_data = []
 
+
 @app.route('/')
 def index():
     return render_template('index.html', networks=networks_data)
 
+
 @app.route('/download')
 def download():
-    return send_file(DATA_FILE, as_attachment=True, download_name='persistent_networks.json')
+    return send_file(
+        DATA_FILE,
+        as_attachment=True,
+        download_name='persistent_networks.json')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

@@ -1,3 +1,10 @@
+import logging
+from load_persistent_networks import load_persistent_networks, save_persistent_networks
+from detect_suspicious_networks import detect_suspicious_networks
+from update_networks_list import update_networks_list
+from parse_networks import parse_networks
+from scan_wifi import scan_wifi
+import logging_config
 import os
 import time
 import signal
@@ -7,21 +14,16 @@ import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
-import logging 
-import logging_config
-from scan_wifi import scan_wifi
-from parse_networks import parse_networks
-from update_networks_list import update_networks_list
-from detect_suspicious_networks import detect_suspicious_networks
-from load_persistent_networks import load_persistent_networks, save_persistent_networks
 
-def signal_handler(sig, frame):
+def signal_handler(_sig, _frame):
     print('Graceful shutdown...')
     logging.info("WiFi monitor is stopping...")
     sys.exit(0)
 
+
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
+
 
 def monitor_wifi(interval=60):
     persistent_networks = load_persistent_networks()
@@ -43,6 +45,7 @@ def monitor_wifi(interval=60):
             time.sleep(interval)
     except KeyboardInterrupt:
         logging.info("WiFi monitor is stopping...")
+
 
 if __name__ == "__main__":
     monitor_wifi()

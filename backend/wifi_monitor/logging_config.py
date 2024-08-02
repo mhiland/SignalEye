@@ -24,11 +24,12 @@ stream_formatter = logging.Formatter(LOG_FORMAT)
 stream_handler.setFormatter(stream_formatter)
 logger.addHandler(stream_handler)
 
+
 def print_last_log_lines():
     try:
         print(f"\n{'Logs':<30}")
         print('=' * 100)
-        num_lines=5
+        num_lines = 5
         with open(LOG_FILE, 'r') as file:
             lines = file.readlines()
             print("".join(lines[-num_lines:]))

@@ -3,13 +3,20 @@ import time
 import os
 from datetime import datetime
 
+
 def run_bluetoothctl_command(command, timeout=10):
     try:
-        result = subprocess.run(['bluetoothctl'] + command.split(), capture_output=True, text=True, timeout=timeout)
+        result = subprocess.run(
+            ['bluetoothctl'] +
+            command.split(),
+            capture_output=True,
+            text=True,
+            timeout=timeout)
         return result.stdout
     except subprocess.TimeoutExpired:
         print(f"Command '{command}' timed out.")
         return ""
+
 
 def scan_bluetooth():
     # Ensure the Bluetooth device is powered on
@@ -26,9 +33,11 @@ def scan_bluetooth():
     result = run_bluetoothctl_command('devices', timeout=30)
     return result
 
+
 def get_device_info(address):
     result = run_bluetoothctl_command(f'info {address}', timeout=10)
     return result
+
 
 def parse_devices(scan_output):
     devices = []
@@ -46,8 +55,10 @@ def parse_devices(scan_output):
                     rssi = info_line.split(':')[1].strip()
                 if 'Alias' in info_line:
                     alias = info_line.split(':')[1].strip()
-            devices.append({'Name': name, 'Alias': alias, 'Address': address, 'RSSI': rssi})
+            devices.append({'Name': name, 'Alias': alias,
+                           'Address': address, 'RSSI': rssi})
     return devices
+
 
 def update_devices_list(persistent_devices, current_devices):
     current_addresses = {device['Address'] for device in current_devices}
@@ -63,6 +74,7 @@ def update_devices_list(persistent_devices, current_devices):
 
     persistent_devices.sort(key=lambda x: x['Name'].lower())
 
+
 def monitor_bluetooth(interval=60):
     persistent_devices = []
     while True:
@@ -76,6 +88,7 @@ def monitor_bluetooth(interval=60):
 
         time.sleep(interval)
 
+
 def print_devices(devices):
     print(f"{'Name':<30} {'Alias':<30} {'Address':<20} {'RSSI':<10} {'Active'}")
     print('-' * 120)
@@ -87,14 +100,17 @@ def print_devices(devices):
         active = device.get('Active', False)
         print(f"{name:<30} {alias:<30} {address:<20} {rssi:<10} {active}")
 
+
 def print_timestamp():
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"Last updated: {timestamp}")
     print('=' * 120)
 
+
 def clear_console():
     # Clear console based on the operating system
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 if __name__ == "__main__":
     monitor_bluetooth()

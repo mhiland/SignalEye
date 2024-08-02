@@ -1,28 +1,37 @@
 """
 This module contains tests for updating the network list.
 """
+from update_networks_list import update_networks_list
 import unittest
 from unittest.mock import patch
 from datetime import datetime
 import sys
 import os
 os.environ['UNIT_TESTING'] = 'True'
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../backend/wifi_monitor/')))
-from update_networks_list import update_networks_list
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            '../backend/wifi_monitor/')))
+
 
 class TestUpdateNetworksList(unittest.TestCase):
     """
     Test cases for updating the network list functionality.
     """
+
     def setUp(self):
         self.persistent_networks = [
             {'ESSID': 'Network1', 'Address': '00:11:22:33:44:55', 'info': 'persistent info'},
             {'ESSID': 'Network2', 'Address': 'AA:BB:CC:DD:EE:FF', 'info': 'persistent info'}
         ]
-        self.current_networks = [
-            {'ESSID': 'Network1', 'Address': '00:11:22:33:44:55', 'additional_info': 'current info'},
-            {'ESSID': 'Network3', 'Address': '11:22:33:44:55:66', 'additional_info': 'current info'}
-        ]
+        self.current_networks = [{'ESSID': 'Network1',
+                                  'Address': '00:11:22:33:44:55',
+                                  'additional_info': 'current info'},
+                                 {'ESSID': 'Network3',
+                                  'Address': '11:22:33:44:55:66',
+                                  'additional_info': 'current info'}]
 
     @patch('update_networks_list.datetime')
     def test_update_existing_network(self, mock_datetime):
@@ -32,8 +41,11 @@ class TestUpdateNetworksList(unittest.TestCase):
 
         # Assert that Network1 is updated and marked as Active
         self.assertTrue(self.persistent_networks[0].get('Active'))
-        self.assertEqual(self.persistent_networks[0].get('Last Seen'), fake_now.strftime("%Y-%m-%d %H:%M:%S"))
-        self.assertEqual(self.persistent_networks[0].get('additional_info'), 'current info')
+        self.assertEqual(
+            self.persistent_networks[0].get('Last Seen'),
+            fake_now.strftime("%Y-%m-%d %H:%M:%S"))
+        self.assertEqual(self.persistent_networks[0].get(
+            'additional_info'), 'current info')
 
     @patch('update_networks_list.datetime')
     def test_add_new_network(self, mock_datetime):
@@ -64,12 +76,16 @@ class TestUpdateNetworksList(unittest.TestCase):
         self.assertFalse(self.persistent_networks[1].get('Active', True))
 
     def test_sorting_persistent_networks(self):
-        self.persistent_networks.append({'ESSID': 'ANetwork', 'Address': 'FF:EE:DD:CC:BB:AA'})
+        self.persistent_networks.append(
+            {'ESSID': 'ANetwork', 'Address': 'FF:EE:DD:CC:BB:AA'})
         update_networks_list(self.persistent_networks, self.current_networks)
 
         # Assert that persistent networks are sorted by ESSID
-        sorted_essids = sorted(net['ESSID'] for net in self.persistent_networks)
-        self.assertEqual([net['ESSID'] for net in self.persistent_networks], sorted_essids)
+        sorted_essids = sorted(net['ESSID']
+                               for net in self.persistent_networks)
+        self.assertEqual([net['ESSID']
+                         for net in self.persistent_networks], sorted_essids)
+
 
 if __name__ == '__main__':
     unittest.main()
