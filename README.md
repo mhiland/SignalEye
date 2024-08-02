@@ -45,5 +45,4 @@
 
 ## Pylint
 Run pylint manually
-> pip install pre-commit
-pylint $(git ls-files '*.py')
+> pylint $(git ls-files '*.py')
