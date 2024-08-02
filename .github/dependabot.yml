@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "backend/wifi_monitor/"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "pip"
+    directory: "frontend/"
+    schedule:
+      interval: "monthly"
