@@ -140,7 +140,7 @@ def parse_networks(data):
 if __name__ == "__main__":
     LOG_DIR = os.path.join('/', 'var', 'log', 'wifi_monitor')
     SCAN_FILE = os.path.join(LOG_DIR, 'scan.out')
-    with open(SCAN_FILE, 'r') as file:
+    with open(SCAN_FILE, 'r', encoding='utf-8') as file:
         network_data = file.read()
     parsed_networks = parse_networks(network_data)
     print(json.dumps(parsed_networks, indent=4))

@@ -30,7 +30,7 @@ def print_last_log_lines():
         print(f"\n{'Logs':<30}")
         print('=' * 100)
         num_lines = 5
-        with open(LOG_FILE, 'r') as file:
+        with open(LOG_FILE, 'r', encoding='utf-8') as file:
             lines = file.readlines()
             print("".join(lines[-num_lines:]))
     except FileNotFoundError:

@@ -17,5 +17,5 @@ if __name__ == "__main__":
     print(result)
     LOG_DIR = os.path.join('/', 'var', 'log', 'wifi_monitor')
     SCAN_FILE = os.path.join(LOG_DIR, 'scan.out')
-    with open(SCAN_FILE, 'w') as file:
+    with open(SCAN_FILE, 'w', encoding='utf-8') as file:
         file.write(result)

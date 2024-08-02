@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Load JSON data
 DATA_FILE = '/var/log/wifi_monitor/persistent_networks.json'
 if os.path.exists(DATA_FILE):
-    with open(DATA_FILE) as f:
+    with open(DATA_FILE, encoding='utf-8') as f:
         networks_data = json.load(f)
 else:
     networks_data = []
