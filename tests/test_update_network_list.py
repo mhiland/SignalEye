@@ -3,16 +3,10 @@ from unittest.mock import patch
 from datetime import datetime
 import sys
 import os
-
-# Update the path to ensure the module can be imported
 os.environ['UNIT_TESTING'] = 'True'
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            '../backend/wifi_monitor/')))
-
+test_file_dir = os.path.dirname(os.path.abspath(__file__))
+module_path = os.path.abspath(os.path.join(test_file_dir, '../backend/wifi_monitor'))
+sys.path.insert(0, module_path)
 from update_networks_list import update_networks_list
 
 @pytest.fixture

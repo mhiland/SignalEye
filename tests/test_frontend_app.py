@@ -2,15 +2,10 @@ import pytest
 import sys
 import os
 from flask import Flask
-
-# Update the path to ensure the module can be imported
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            '../frontend')))
-
+os.environ['UNIT_TESTING'] = 'True'
+test_file_dir = os.path.dirname(os.path.abspath(__file__))
+module_path = os.path.abspath(os.path.join(test_file_dir, '../frontend'))
+sys.path.insert(0, module_path)
 from app import app, networks_data, DATA_FILE
 
 @pytest.fixture
