@@ -38,7 +38,7 @@
 > docker-compose up -d
 
 ## Test
-> python -m unittest discover tests
+> pytest
 
 ## Pylint
 Run pylint manually
