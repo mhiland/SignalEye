@@ -1,7 +1,6 @@
 """
 This module contains tests for updating the network list.
 """
-from update_networks_list import update_networks_list
 import unittest
 from unittest.mock import patch
 from datetime import datetime
@@ -14,7 +13,7 @@ sys.path.insert(
         os.path.join(
             os.path.dirname(__file__),
             '../backend/wifi_monitor/')))
-
+from update_networks_list import update_networks_list
 
 class TestUpdateNetworksList(unittest.TestCase):
     """

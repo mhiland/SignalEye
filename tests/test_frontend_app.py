@@ -2,7 +2,6 @@
 This module contains tests for the frontend application.
 """
 
-from app import app
 import unittest
 import sys
 import os
@@ -12,6 +11,7 @@ sys.path.insert(
         os.path.join(
             os.path.dirname(__file__),
             '../frontend')))
+from app import app, networks_data, DATA_FILE
 
 
 class FlaskAppTestCase(unittest.TestCase):
