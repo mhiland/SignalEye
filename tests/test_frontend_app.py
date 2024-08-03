@@ -1,44 +1,37 @@
-"""
-This module contains tests for the frontend application.
-"""
-
-import unittest
+import pytest
 import sys
 import os
+from flask import Flask
+
+# Update the path to ensure the module can be imported
 sys.path.insert(
     0,
     os.path.abspath(
         os.path.join(
             os.path.dirname(__file__),
             '../frontend')))
+
 from app import app, networks_data, DATA_FILE
 
+@pytest.fixture
+def client():
+    """Fixture for setting up the Flask test client."""
+    app.testing = True
+    with app.test_client() as client:
+        yield client
 
-class FlaskAppTestCase(unittest.TestCase):
-    """
-    Test cases for the frontend application.
-    """
-    @classmethod
-    def setUpClass(cls):
-        cls.app = app.test_client()
-        cls.app.testing = True
+def test_index_route(client):
+    """Test the index route of the application."""
+    response = client.get('/')
 
-    def test_index_route(self):
-        response = self.app.get('/')
+    assert response.status_code == 200
+    assert len(response.data) > 0
+    assert b'<!DOCTYPE html>' in response.data
 
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(len(response.data) > 0)
-        self.assertIn(b'<!DOCTYPE html>', response.data)
+def test_download_route(client):
+    """Test the download route of the application."""
+    response = client.get('/download')
 
-    def test_download_route(self):
-        response = self.app.get('/download')
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.headers['Content-Type'], 'application/json')
-        self.assertEqual(
-            response.headers['Content-Disposition'],
-            'attachment; filename=persistent_networks.json')
-
-
-if __name__ == '__main__':
-    unittest.main()
+    assert response.status_code == 200
+    assert response.headers['Content-Type'] == 'application/json'
+    assert response.headers['Content-Disposition'] == 'attachment; filename=persistent_networks.json'
