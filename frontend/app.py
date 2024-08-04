@@ -7,6 +7,8 @@ app = Flask(__name__)
 
 # Load JSON data
 DATA_FILE = '/var/log/wifi_monitor/persistent_networks.json'
+LOG_FILE = '/var/log/wifi_monitor/wifi_monitor.log'
+
 if os.path.exists(DATA_FILE):
     with open(DATA_FILE, encoding='utf-8') as f:
         networks_data = json.load(f)
@@ -29,6 +31,15 @@ def download():
         temp_file,
         as_attachment=True,
         download_name='persistent_networks.json')
+
+
+@app.route('/logs')
+def logs():
+    log_content = ''
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE, 'r', encoding='utf-8') as f:
+            log_content = f.read()
+    return render_template('logs.html', log_content=log_content)
 
 
 if __name__ == '__main__':
