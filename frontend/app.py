@@ -1,6 +1,7 @@
 from flask import Flask, render_template, send_file
 import json
 import os
+import io
 
 app = Flask(__name__)
 
@@ -20,8 +21,12 @@ def index():
 
 @app.route('/download')
 def download():
+    temp_file = io.BytesIO()
+    temp_file.write(json.dumps(networks_data).encode('utf-8'))
+    temp_file.seek(0)
+    
     return send_file(
-        DATA_FILE,
+        temp_file,
         as_attachment=True,
         download_name='persistent_networks.json')
 
