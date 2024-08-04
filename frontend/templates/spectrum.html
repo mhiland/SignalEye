@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Spectrum</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .button-bar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .button-bar a {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        pre {
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="button-bar">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('logs') }}">View Logs</a>
+        <a href="{{ url_for('spectrum') }}">View Spectrum</a>
+        <a href="{{ url_for('download') }}">Download JSON</a>
+    </div>
+
+    <h1>WiFi Spectrum Analysis (Last 24 Hours)</h1>
+    <div class="button-bar">
+        <a href="#2.4ghzChart">2.4GHz Spectrum</a>
+        <a href="#5ghzChart">5GHz Spectrum</a>
+    </div>
+
+    <h2 id="2.4ghzChart">2.4GHz Band</h2>
+    <canvas id="2.4ghzChartCanvas"></canvas>
+
+    <h2 id="5ghzChart">5GHz Band</h2>
+    <canvas id="5ghzChartCanvas"></canvas>
+
+    <script>
+        const spectrumData = JSON.parse('{{ spectrum_data|safe }}');
+
+        function formatGroupedData(data) {
+            const groupedData = {};
+            const essidMap = {};
+            data.forEach(d => {
+                const channel = d.channel;
+                const essid = d.essid || "Hidden SSID";
+                if (!groupedData[channel]) {
+                    groupedData[channel] = [];
+                    essidMap[channel] = [];
+                }
+                groupedData[channel].push(d.signal_level);
+                essidMap[channel].push(essid);
+            });
+
+            const labels = Object.keys(groupedData).map(channel => `Channel ${channel}`);
+            const datasets = [];
+
+            labels.forEach((label, labelIndex) => {
+                const channel = label.split(' ')[1];
+                groupedData[channel].forEach((signalLevel, index) => {
+                    datasets.push({
+                        label: `${essidMap[channel][index]} (Channel ${channel})`,
+                        data: Array(labels.length).fill(null),
+                        backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`,
+                        borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
+                        borderWidth: 1,
+                        dataIndex: labelIndex,
+                        signal_level: signalLevel
+                    });
+                });
+            });
+
+            // Populate the datasets with the correct signal levels
+            datasets.forEach(dataset => {
+                dataset.data[dataset.dataIndex] = dataset.signal_level;
+            });
+
+            return {
+                labels: labels,
+                datasets: datasets
+            };
+        }
+
+        const ctx24 = document.getElementById('2.4ghzChartCanvas').getContext('2d');
+        const ctx5 = document.getElementById('5ghzChartCanvas').getContext('2d');
+
+        const chart24 = new Chart(ctx24, {
+            type: 'bar',
+            data: formatGroupedData(spectrumData['2.4GHz']),
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const chart5 = new Chart(ctx5, {
+            type: 'bar',
+            data: formatGroupedData(spectrumData['5GHz']),
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
