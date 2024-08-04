@@ -9,6 +9,6 @@ repos:
     hooks:
       -   id: check-yaml
       -   id: end-of-file-fixer
-          exclude: ^out\.txt$
+          exclude: ^.*oui\.txt$
       -   id: trailing-whitespace
-          exclude: ^out\.txt$
+          exclude: ^.*oui\.txt$

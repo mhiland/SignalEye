@@ -40,6 +40,9 @@
 ## Test
 > pytest
 
+## Pre-Commit Validation
+> pre-commit run --all-files
+
 ## Pylint
 Run pylint manually
 > pylint $(git ls-files '*.py')
