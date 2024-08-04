@@ -4,7 +4,7 @@
         "./backend/wifi_monitor"
     ],
     "python.testing.pytestArgs": [
-        "./tests"  
+        "./tests"
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
