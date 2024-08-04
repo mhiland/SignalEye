@@ -62,7 +62,7 @@
                 <td>
                     {% set encryption_info = network.get('Encryption Info', {}) %}
                     {% if encryption_info.get('Encryption') == 'Enabled' %}
-                        Enabled 
+                        Enabled
                         {% if encryption_info.get('WPA2') %}
                             (WPA2: {{ encryption_info.get('WPA2', {}).get('Authentication Suites', '') }})
                         {% endif %}

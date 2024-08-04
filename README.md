@@ -40,6 +40,9 @@
 ## Test
 > pytest
 
+## Pre-Commit Validation
+> pre-commit run --all-files
+
 ## Pylint
 Run pylint manually
 > pylint $(git ls-files '*.py')
@@ -47,5 +50,3 @@ Run pylint manually
 ## autopep8
 autopep8 can automatically fix trailing whitespace issues along with other PEP 8 formatting issues.
 > autopep8 --in-place --aggressive --aggressive --recursive .
-
-
