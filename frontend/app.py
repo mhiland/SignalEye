@@ -24,7 +24,7 @@ def download():
     temp_file = io.BytesIO()
     temp_file.write(json.dumps(networks_data).encode('utf-8'))
     temp_file.seek(0)
-    
+
     return send_file(
         temp_file,
         as_attachment=True,
