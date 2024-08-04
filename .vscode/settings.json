@@ -7,7 +7,5 @@
         "./tests"
     ],
     "python.testing.pytestEnabled": true,
-    "python.testing.unittestEnabled": false,
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+    "python.testing.unittestEnabled": false
 }
