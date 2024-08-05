@@ -1,8 +1,14 @@
 from flask import Flask, render_template, send_file
 from datetime import datetime, timedelta
 import json
-import os
+import os, sys
 import io
+from jsonschema import validate, ValidationError
+test_file_dir = os.path.dirname(os.path.abspath(__file__))
+module_path = os.path.abspath(os.path.join(
+    test_file_dir, '../backend/wifi_monitor'))
+sys.path.insert(0, module_path)
+from json_schema import schema
 
 app = Flask(__name__)
 
@@ -13,6 +19,7 @@ LOG_FILE = '/var/log/wifi_monitor/wifi_monitor.log'
 if os.path.exists(DATA_FILE):
     with open(DATA_FILE, encoding='utf-8') as f:
         networks_data = json.load(f)
+        validate(instance=networks_data, schema=schema)
 else:
     networks_data = []
 
