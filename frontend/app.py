@@ -85,6 +85,16 @@ def data():
         else:
             older_networks.append(network)
 
+    # Custom sort key for ESSID, non-empty first then empty
+    def essid_sort_key(network):
+        essid_empty = network['ESSID'] == ''
+        essid_lower = network['ESSID'].lower()
+        address = network['Address']
+        return (essid_empty, essid_lower, address)
+
+    recent_networks.sort(key=essid_sort_key)
+    older_networks.sort(key=essid_sort_key)
+
     return jsonify({
         'recent_networks': recent_networks,
         'older_networks': older_networks
@@ -108,7 +118,9 @@ def logs():
     log_content = ''
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE, 'r', encoding='utf-8') as f:
-            log_content = f.read()
+            lines = f.readlines()
+            reversed_lines = reversed(lines)
+            log_content = ''.join(reversed_lines)
     return render_template('logs.html', log_content=log_content)
 
 
