@@ -1,7 +1,7 @@
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_file, jsonify
 from datetime import datetime, timedelta
 import json
-import os, sys
+import os, sys, pytz
 import io
 from jsonschema import validate, ValidationError
 test_file_dir = os.path.dirname(os.path.abspath(__file__))
@@ -25,12 +25,12 @@ else:
 
 
 def filter_last_24_hours(data):
-    cutoff_time = datetime.now() - timedelta(hours=24)
+    cutoff_time = datetime.now(pytz.UTC) - timedelta(hours=24)
     filtered_data = []
 
     for network in data:
         last_seen = datetime.strptime(
-            network["Last Seen"], "%Y-%m-%d %H:%M:%S")
+            network["LastSeen"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC)
         if last_seen >= cutoff_time:
             filtered_data.append(network)
 
@@ -47,7 +47,7 @@ def process_data(data):
     for network in data:
         frequency = float(network["Frequency"])
         channel = int(network["Channel"])
-        signal_level = int(network["Signal Level"])
+        signal_level = int(network["SignalLevel"])
         essid = network["ESSID"]
 
         if 2.4 <= frequency < 2.5:
@@ -65,7 +65,30 @@ def process_data(data):
 
 @app.route('/')
 def index():
-    return render_template('index.html', networks=networks_data)
+    return render_template('index.html')
+
+
+@app.route('/data')
+def data():
+    now = datetime.now(pytz.UTC)
+    last_24hrs = now - timedelta(hours=24)
+
+    recent_networks = []
+    older_networks = []
+
+    for network in networks_data:
+        last_seen_str = network.get("LastSeen")
+        last_seen_time = datetime.strptime(last_seen_str, "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC)
+
+        if last_seen_time >= last_24hrs:
+            recent_networks.append(network)
+        else:
+            older_networks.append(network)
+
+    return jsonify({
+        'recent_networks': recent_networks,
+        'older_networks': older_networks
+    })
 
 
 @app.route('/download')

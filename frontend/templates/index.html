@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Data</title>
+    <title>Networks</title>
     <style>
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
         table, th, td {
             border: 1px solid black;
@@ -29,9 +29,84 @@
         }
     </style>
     <script>
-        setTimeout(function(){
-            window.location.reload(1);
-        }, 10000);
+        function getEncryptionInfo(encryptionInfo) {
+            if (encryptionInfo['Encryption'] === 'Enabled') {
+                let info = 'Enabled';
+                if (encryptionInfo['WPA2']) {
+                    info += ` (WPA2: ${encryptionInfo['WPA2']['AuthenticationSuites'] || ''})`;
+                }
+                return info;
+            } else if (encryptionInfo['Encryption'] === 'Open') {
+                return 'Open';
+            } else {
+                return 'Unknown';
+            }
+        }
+
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    const recentNetworksTable = document.getElementById('recent-networks');
+                    const olderNetworksTable = document.getElementById('older-networks');
+
+                    // Clear existing data
+                    recentNetworksTable.querySelector('tbody').innerHTML = '';
+                    olderNetworksTable.querySelector('tbody').innerHTML = '';
+
+                    // Populate recent networks
+                    data.recent_networks.forEach(network => {
+                        let encryptionInfo = getEncryptionInfo(network['EncryptionInfo'] || {});
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${network.ESSID || ''}</td>
+                            <td>${network.Address || ''}</td>
+                            <td>${network.Manufacturer || ''}</td>
+                            <td>${network.Frequency || ''}</td>
+                            <td>${network.Channel || ''}</td>
+                            <td>${network.Quality || ''}</td>
+                            <td>${network.SignalLevel || ''}</td>
+                            <td>${network.Mode || ''}</td>
+                            <td>${encryptionInfo}</td>
+                            <td>${network.Active || ''}</td>
+                            <td>${network.LastSeen || ''}</td>
+                            <td>${network.FirstSeen || ''}</td>
+                            <td>${network.Suspicious || ''}</td>
+                            <td>${network.Reason || ''}</td>
+                        `;
+                        recentNetworksTable.querySelector('tbody').appendChild(tr);
+                    });
+
+                    // Populate older networks
+                    data.older_networks.forEach(network => {
+                        let encryptionInfo = getEncryptionInfo(network['EncryptionInfo'] || {});
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${network.ESSID || ''}</td>
+                            <td>${network.Address || ''}</td>
+                            <td>${network.Manufacturer || ''}</td>
+                            <td>${network.Frequency || ''}</td>
+                            <td>${network.Channel || ''}</td>
+                            <td>${network.Quality || ''}</td>
+                            <td>${network.SignalLevel || ''}</td>
+                            <td>${network.Mode || ''}</td>
+                            <td>${encryptionInfo}</td>
+                            <td>${network.Active || ''}</td>
+                            <td>${network.LastSeen || ''}</td>
+                            <td>${network.FirstSeen || ''}</td>
+                            <td>${network.Suspicious || ''}</td>
+                            <td>${network.Reason || ''}</td>
+                        `;
+                        olderNetworksTable.querySelector('tbody').appendChild(tr);
+                    });
+                });
+        }
+
+        // Fetch data every 5 seconds
+        setInterval(fetchData, 5000);
+
+        // Fetch data immediately when the page loads
+        window.onload = fetchData;
     </script>
 </head>
 <body>
@@ -41,8 +116,8 @@
         <a href="{{ url_for('spectrum') }}">View Spectrum</a>
         <a href="{{ url_for('download') }}">Download JSON</a>
     </div>
-    <h1>Persistent Networks Data</h1>
-    <table>
+    <h1>Recent Networks (within 24 hours)</h1>
+    <table id="recent-networks">
         <thead>
             <tr>
                 <th>ESSID</th>
@@ -62,36 +137,32 @@
             </tr>
         </thead>
         <tbody>
-            {% for network in networks %}
+            <!-- Data will be populated here by JavaScript -->
+        </tbody>
+    </table>
+
+    <h1>Older Networks</h1>
+    <table id="older-networks">
+        <thead>
             <tr>
-                <td>{{ network.get('ESSID', '') }}</td>
-                <td>{{ network.get('Address', '') }}</td>
-                <td>{{ network.get('Manufacturer', '') }}</td>
-                <td>{{ network.get('Frequency', '') }}</td>
-                <td>{{ network.get('Channel', '') }}</td>
-                <td>{{ network.get('Quality', '') }}</td>
-                <td>{{ network.get('Signal Level', '') }}</td>
-                <td>{{ network.get('Mode', '') }}</td>
-                <td>
-                    {% set encryption_info = network.get('Encryption Info', {}) %}
-                    {% if encryption_info.get('Encryption') == 'Enabled' %}
-                        Enabled
-                        {% if encryption_info.get('WPA2') %}
-                            (WPA2: {{ encryption_info.get('WPA2', {}).get('Authentication Suites', '') }})
-                        {% endif %}
-                    {% elif encryption_info.get('Encryption') == 'Open' %}
-                        Open
-                    {% else %}
-                        Unknown
-                    {% endif %}
-                </td>
-                <td>{{ network.get('Active', False) }}</td>
-                <td>{{ network.get('Last Seen', '') }}</td>
-                <td>{{ network.get('First Seen', '') }}</td>
-                <td>{{ network.get('Suspicious', False) }}</td>
-                <td>{{ network.get('Reason', '') }}</td>
+                <th>ESSID</th>
+                <th>Address</th>
+                <th>Manufacturer</th>
+                <th>Frequency</th>
+                <th>Channel</th>
+                <th>Quality</th>
+                <th>Signal Level</th>
+                <th>Mode</th>
+                <th>Encryption</th>
+                <th>Active</th>
+                <th>Last Seen</th>
+                <th>First Seen</th>
+                <th>Suspicious</th>
+                <th>Reason</th>
             </tr>
-            {% endfor %}
+        </thead>
+        <tbody>
+            <!-- Data will be populated here by JavaScript -->
         </tbody>
     </table>
 </body>

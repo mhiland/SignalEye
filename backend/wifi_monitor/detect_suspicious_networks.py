@@ -30,7 +30,7 @@ class NetworkAdapter:
         return self.network.get('ESSID', '')
 
     def get_encryption(self):
-        encryption_info = self.network.get('Encryption Info', {})
+        encryption_info = self.network.get('EncryptionInfo', {})
         encryption_status = encryption_info.get('Encryption', 'Unknown')
 
         if encryption_status == 'Enabled':

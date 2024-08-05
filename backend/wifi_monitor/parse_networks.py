@@ -35,9 +35,9 @@ def parse_encryption_info(cell_data):
                 r'Authentication Suites \(\d+\) : (\w+)',
                 wpa3_section).group(1)
             encryption_info['WPA3'] = {
-                'Group Cipher': group_cipher,
-                'Pairwise Ciphers': pairwise_ciphers,
-                'Authentication Suites': auth_suites
+                'GroupCipher': group_cipher,
+                'PairwiseCiphers': pairwise_ciphers,
+                'AuthenticationSuites': auth_suites
             }
 
         # Extract WPA2 information
@@ -56,11 +56,11 @@ def parse_encryption_info(cell_data):
                 ' ',
                 pairwise_ciphers_match.group(1)).strip() if pairwise_ciphers_match else None
             encryption_info["WPA2"] = {
-                "Group Cipher": re.search(
+                "GroupCipher": re.search(
                     r'Group Cipher : (\w+)',
                     wpa2_section).group(1),
-                "Pairwise Ciphers": pairwise_ciphers,
-                "Authentication Suites": re.search(
+                "PairwiseCiphers": pairwise_ciphers,
+                "AuthenticationSuites": re.search(
                     r'Authentication Suites \(\d+\) : (\w+)',
                     wpa2_section).group(1)}
 
@@ -80,11 +80,11 @@ def parse_encryption_info(cell_data):
                 ' ',
                 pairwise_ciphers_match.group(1)).strip() if pairwise_ciphers_match else None
             encryption_info["WPA"] = {
-                "Group Cipher": re.search(
+                "GroupCipher": re.search(
                     r'Group Cipher : (\w+)',
                     wpa_section).group(1),
-                "Pairwise Ciphers": pairwise_ciphers,
-                "Authentication Suites": re.search(
+                "PairwiseCiphers": pairwise_ciphers,
+                "AuthenticationSuites": re.search(
                     r'Authentication Suites \(\d+\) : (\w+)',
                     wpa_section).group(1)}
 
@@ -111,7 +111,7 @@ def parse_cell_information(cell_data):
         info["Quality"] = re.search(
             r'Quality=([\d/]+)',
             cell_data).group(1).split('/')[0]
-        info["Signal Level"] = re.search(
+        info["SignalLevel"] = re.search(
             r'Signal level=([\-\d]+ dBm)',
             cell_data).group(1).split(' ')[0]
         mode = re.search(r'Mode:(\w+)', cell_data).group(1)
@@ -131,7 +131,7 @@ def parse_networks(data):
     for cell in cells:
         cell_data = 'Cell ' + cell
         additional_info = parse_cell_information(cell_data)
-        additional_info["Encryption Info"] = parse_encryption_info(cell_data)
+        additional_info["EncryptionInfo"] = parse_encryption_info(cell_data)
         networks.append(additional_info)
 
     return networks

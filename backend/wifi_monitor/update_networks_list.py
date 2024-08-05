@@ -1,5 +1,6 @@
 import logging
 import logging_config
+import pytz
 from datetime import datetime
 
 
@@ -11,7 +12,7 @@ def update_networks_list(persistent_networks, current_networks):
         network_identifier = (net.get('ESSID'), net.get('Address'))
         if network_identifier in current_network_identifiers:
             net['Active'] = True
-            net['Last Seen'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            net['LastSeen'] = datetime.now(pytz.UTC).strftime("%Y-%m-%d %H:%M:%S")
             for current_net in current_networks:
                 if 'ESSID' in current_net and 'Address' in current_net:
                     if current_net['ESSID'] == net['ESSID'] and current_net['Address'] == net['Address']:
@@ -28,9 +29,9 @@ def update_networks_list(persistent_networks, current_networks):
             network_identifier = (current_net['ESSID'], current_net['Address'])
             if network_identifier not in persistent_network_identifiers:
                 current_net['Active'] = True
-                current_net['Last Seen'] = datetime.now().strftime(
+                current_net['LastSeen'] = datetime.now(pytz.UTC).strftime(
                     "%Y-%m-%d %H:%M:%S")
-                current_net['First Seen'] = datetime.now().strftime(
+                current_net['FirstSeen'] = datetime.now(pytz.UTC).strftime(
                     "%Y-%m-%d %H:%M:%S")
                 persistent_networks.append(current_net)
                 logging.info(
@@ -38,7 +39,7 @@ def update_networks_list(persistent_networks, current_networks):
             elif network_identifier in persistent_network_identifiers:
                 for net in persistent_networks:
                     if net['ESSID'] == current_net['ESSID'] and net['Address'] == current_net['Address']:
-                        net['Last Seen'] = datetime.now().strftime(
+                        net['LastSeen'] = datetime.now(pytz.UTC).strftime(
                             "%Y-%m-%d %H:%M:%S")
                         net.update(current_net)
 
