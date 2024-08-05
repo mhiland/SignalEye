@@ -8,3 +8,6 @@ scan.out
 
 **/logs/
 *.log
+
+**/training_data/
+*.nd

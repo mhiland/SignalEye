@@ -1,5 +1,5 @@
 import subprocess
-import time
+import time, pytz
 import os
 from datetime import datetime
 
@@ -102,7 +102,7 @@ def print_devices(devices):
 
 
 def print_timestamp():
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now(pytz.UTC).strftime("%Y-%m-%d %H:%M:%S")
     print(f"Last updated: {timestamp}")
     print('=' * 120)
 

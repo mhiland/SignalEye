@@ -1,5 +1,5 @@
 import logging
-from load_persistent_networks import load_persistent_networks, save_persistent_networks
+from load_persistent_networks import load_persistent_networks, save_persistent_networks, save_training_data
 from detect_suspicious_networks import detect_suspicious_networks
 from update_networks_list import update_networks_list
 from parse_networks import parse_networks
@@ -34,6 +34,7 @@ def monitor_wifi(interval=60):
             if scan_output:
                 try:
                     current_networks = parse_networks(scan_output)
+                    save_training_data(scan_output)
                     update_networks_list(persistent_networks, current_networks)
                     save_persistent_networks(persistent_networks)
                     detect_suspicious_networks(persistent_networks)

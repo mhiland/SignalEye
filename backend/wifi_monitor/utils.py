@@ -1,5 +1,6 @@
 import os, pytz
 from datetime import datetime, timedelta
+from detect_suspicious_networks import NetworkAdapter
 
 
 def clear_console():
@@ -25,7 +26,7 @@ def print_networks(networks):
             try:
                 # Convert string to datetime
                 last_seen_time = datetime.strptime(
-                    last_seen_time, '%Y-%m-%d %H:%M:%S')
+                    last_seen_time, '%Y-%m-%d %H:%M:%S').replace(tzinfo=pytz.UTC)
                 if last_seen_time >= now - time_window:
                     recent_networks.append(network)
                 else:
@@ -43,36 +44,6 @@ def print_networks(networks):
     # Print remaining networks
     print("\nOlder networks:")
     print_networks2(remaining_networks)
-
-
-class NetworkAdapter:
-    def __init__(self, details):
-        self.details = details
-
-    def get_encryption(self):
-        encryption_info = self.details.get('EncryptionInfo', {})
-        encryption_status = encryption_info.get('Encryption', 'Unknown')
-
-        if encryption_status == 'Enabled':
-            encryption_types = []
-
-            wpa3_info = encryption_info.get('WPA3')
-            wpa2_info = encryption_info.get('WPA2')
-            wpa_info = encryption_info.get('WPA')
-            wep_info = encryption_info.get('WEP')
-
-            if wpa3_info is not None:
-                encryption_types.append("WPA3")
-            if wpa2_info is not None:
-                encryption_types.append("WPA2")
-            if wpa_info is not None:
-                encryption_types.append("WPA")
-            if wep_info is not None and wep_info == "Enabled":
-                encryption_types.append("WEP")
-            if encryption_types:
-                return ",".join(encryption_types)
-            return "Unknown"
-        return "Open"
 
 
 def print_networks2(networks):
