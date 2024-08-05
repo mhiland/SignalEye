@@ -1,4 +1,4 @@
-import os
+import os, pytz
 from datetime import datetime, timedelta
 
 
@@ -7,20 +7,20 @@ def clear_console():
 
 
 def print_timestamp():
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now(pytz.UTC).strftime("%Y-%m-%d %H:%M:%S")
     print(f"Last updated: {timestamp}")
     print('=' * 150)
 
 
 def print_networks(networks):
-    now = datetime.now()
+    now = datetime.now(pytz.UTC)
     time_window = timedelta(days=1)
 
     recent_networks = []
     remaining_networks = []
 
     for network in networks:
-        last_seen_time = network.get('Last Seen', 'Never')
+        last_seen_time = network.get('LastSeen', 'Never')
         if last_seen_time != 'Never':
             try:
                 # Convert string to datetime
@@ -50,7 +50,7 @@ class NetworkAdapter:
         self.details = details
 
     def get_encryption(self):
-        encryption_info = self.details.get('Encryption Info', {})
+        encryption_info = self.details.get('EncryptionInfo', {})
         encryption_status = encryption_info.get('Encryption', 'Unknown')
 
         if encryption_status == 'Enabled':
@@ -87,13 +87,13 @@ def print_networks2(networks):
         frequency = net.get('Frequency', 'Unknown')
         channel = net.get('Channel', 'Unknown')
         quality = net.get('Quality', 'Unknown')
-        signal_level = net.get('Signal Level', 'Unknown')
+        signal_level = net.get('SignalLevel', 'Unknown')
         network = NetworkAdapter(net)
         encryption = network.get_encryption()
         mode = net.get('Mode', 'Unknown')
         active = net.get('Active', False)
-        first_seen = net.get('First Seen', 'Never')
-        last_seen = net.get('Last Seen', 'Never')
+        first_seen = net.get('FirstSeen', 'Never')
+        last_seen = net.get('LastSeen', 'Never')
         if (ssid, address) not in seen_addresses:
             print(f"{ssid:<30} {address:<20} {manufacturer:<30} {frequency:<10} {channel:<8} {quality:<8} {signal_level:<12} {encryption:<10} {mode:<8} {str(active):<8} {first_seen:<20} {last_seen:<20}")
             seen_addresses.add((ssid, address))

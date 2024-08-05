@@ -18,9 +18,9 @@ valid_data = [
         "Frequency": "5.5",
         "Channel": "100",
         "Quality": "36",
-        "Signal Level": "-74",
+        "SignalLevel": "-74",
         "Mode": "Master",
-        "Encryption Info": {
+        "EncryptionInfo": {
             "Encryption": "Open",
             "WPA3": None,
             "WPA2": None,
@@ -28,8 +28,8 @@ valid_data = [
             "WEP": None
         },
         "Active": True,
-        "Last Seen": "2024-08-04 06:13:39",
-        "First Seen": "2024-07-29 05:49:48",
+        "LastSeen": "2024-08-04 06:13:39",
+        "FirstSeen": "2024-07-29 05:49:48",
         "Suspicious": True,
         "Reason": "Hidden SSID; Open network; Unusual channel; SSID spoofing detected"
     }
@@ -43,9 +43,9 @@ invalid_data = [
         "Frequency": "5.5",
         "Channel": "100",
         "Quality": "36",
-        "Signal Level": "-74",
+        "SignalLevel": "-74",
         "Mode": "Master",
-        "Encryption Info": {
+        "EncryptionInfo": {
             "Encryption": "Open",
             "WPA3": None,
             "WPA2": None,
@@ -53,8 +53,8 @@ invalid_data = [
             "WEP": None
         },
         "Active": "yes",  # Invalid value (should be a boolean)
-        "Last Seen": "2024-08-04 06:13:39",
-        "First Seen": "2024-07-29 05:49:48",
+        "LastSeen": "2024-08-04 06:13:39",
+        "FirstSeen": "2024-07-29 05:49:48",
         "Suspicious": True,
         "Reason": "Hidden SSID; Open network; Unusual channel; SSID spoofing detected"
     }

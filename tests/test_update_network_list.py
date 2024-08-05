@@ -32,7 +32,7 @@ def test_update_existing_network(mock_datetime, setup_networks):
 
     # Assert that Network1 is updated and marked as Active
     assert persistent_networks[0].get('Active') is True
-    assert persistent_networks[0].get('Last Seen') == fake_now.strftime("%Y-%m-%d %H:%M:%S")
+    assert persistent_networks[0].get('LastSeen') == fake_now.strftime("%Y-%m-%d %H:%M:%S")
     assert persistent_networks[0].get('additional_info') == 'current info'
 
 @patch('update_networks_list.datetime')
@@ -48,8 +48,8 @@ def test_add_new_network(mock_datetime, setup_networks):
         'Address': '11:22:33:44:55:66',
         'additional_info': 'current info',
         'Active': True,
-        'First Seen': fake_now.strftime("%Y-%m-%d %H:%M:%S"),
-        'Last Seen': fake_now.strftime("%Y-%m-%d %H:%M:%S")
+        'FirstSeen': fake_now.strftime("%Y-%m-%d %H:%M:%S"),
+        'LastSeen': fake_now.strftime("%Y-%m-%d %H:%M:%S")
     }
 
     # Assert that Network3 is added to persistent networks list

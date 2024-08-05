@@ -13,9 +13,9 @@ schema = {
             "Frequency": {"type": "string"},
             "Channel": {"type": "string"},
             "Quality": {"type": "string"},
-            "Signal Level": {"type": "string"},
+            "SignalLevel": {"type": "string"},
             "Mode": {"type": "string"},
-            "Encryption Info": {
+            "EncryptionInfo": {
                 "type": "object",
                 "properties": {
                     "Encryption": {"type": "string"},
@@ -23,18 +23,18 @@ schema = {
                     "WPA2": {
                         "type": ["object", "null"],
                         "properties": {
-                            "Group Cipher": {"type": "string"},
-                            "Pairwise Ciphers": {"type": "string"},
-                            "Authentication Suites": {"type": "string"}
+                            "GroupCipher": {"type": "string"},
+                            "PairwiseCiphers": {"type": "string"},
+                            "AuthenticationSuites": {"type": "string"}
                         },
                         "additionalProperties": False
                     },
                     "WPA": {
                         "type": ["object", "null"],
                         "properties": {
-                            "Group Cipher": {"type": "string"},
-                            "Pairwise Ciphers": {"type": "string"},
-                            "Authentication Suites": {"type": "string"}
+                            "GroupCipher": {"type": "string"},
+                            "PairwiseCiphers": {"type": "string"},
+                            "AuthenticationSuites": {"type": "string"}
                         },
                         "additionalProperties": False
                     },
@@ -44,12 +44,12 @@ schema = {
                 "additionalProperties": False
             },
             "Active": {"type": "boolean"},
-            "Last Seen": {"type": "string", "format": "date-time"},
-            "First Seen": {"type": "string", "format": "date-time"},
+            "LastSeen": {"type": "string", "format": "date-time"},
+            "FirstSeen": {"type": "string", "format": "date-time"},
             "Suspicious": {"type": "boolean"},
             "Reason": {"type": "string"}
         },
-        "required": ["Address", "Manufacturer", "Frequency", "Channel", "Quality", "Signal Level", "Encryption Info", "Active", "Last Seen", "First Seen"],
+        "required": ["Address", "Manufacturer", "Frequency", "Channel", "Quality", "SignalLevel", "EncryptionInfo", "Active", "LastSeen", "FirstSeen"],
         "additionalProperties": False
     }
 }
