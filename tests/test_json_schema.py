@@ -22,10 +22,7 @@ valid_data = [
         "Mode": "Master",
         "EncryptionInfo": {
             "Encryption": "Open",
-            "WPA3": None,
-            "WPA2": None,
-            "WPA": None,
-            "WEP": None
+            "RSN": None
         },
         "Active": True,
         "LastSeen": "2024-08-04 06:13:39",
@@ -47,10 +44,7 @@ invalid_data = [
         "Mode": "Master",
         "EncryptionInfo": {
             "Encryption": "Open",
-            "WPA3": None,
-            "WPA2": None,
-            "WPA": None,
-            "WEP": None
+            "RSN": None
         },
         "Active": "yes",  # Invalid value (should be a boolean)
         "LastSeen": "2024-08-04 06:13:39",
