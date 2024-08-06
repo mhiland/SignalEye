@@ -29,20 +29,6 @@
         }
     </style>
     <script>
-        function getEncryptionInfo(encryptionInfo) {
-            if (encryptionInfo['Encryption'] === 'Enabled') {
-                let info = 'Enabled';
-                if (encryptionInfo['WPA2']) {
-                    info += ` (WPA2: ${encryptionInfo['WPA2']['AuthenticationSuites'] || ''})`;
-                }
-                return info;
-            } else if (encryptionInfo['Encryption'] === 'Open') {
-                return 'Open';
-            } else {
-                return 'Unknown';
-            }
-        }
-
         function fetchData() {
             fetch('/data')
                 .then(response => response.json())
@@ -54,9 +40,9 @@
                     recentNetworksTable.querySelector('tbody').innerHTML = '';
                     olderNetworksTable.querySelector('tbody').innerHTML = '';
 
-                    // Populate recent networks
-                    data.recent_networks.forEach(network => {
-                        let encryptionInfo = getEncryptionInfo(network['EncryptionInfo'] || {});
+                    // Helper function to create table rows
+                    function createTableRow(network) {
+                        let encryptionInfo = network['EncryptionInfo'] ? network['EncryptionInfo']['Encryption'] : '';
                         let tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${network.ESSID || ''}</td>
@@ -74,30 +60,17 @@
                             <td>${network.Suspicious || ''}</td>
                             <td>${network.Reason || ''}</td>
                         `;
-                        recentNetworksTable.querySelector('tbody').appendChild(tr);
+                        return tr;
+                    }
+
+                    // Populate recent networks
+                    data.recent_networks.forEach(network => {
+                        recentNetworksTable.querySelector('tbody').appendChild(createTableRow(network));
                     });
 
                     // Populate older networks
                     data.older_networks.forEach(network => {
-                        let encryptionInfo = getEncryptionInfo(network['EncryptionInfo'] || {});
-                        let tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${network.ESSID || ''}</td>
-                            <td>${network.Address || ''}</td>
-                            <td>${network.Manufacturer || ''}</td>
-                            <td>${network.Frequency || ''}</td>
-                            <td>${network.Channel || ''}</td>
-                            <td>${network.Quality || ''}</td>
-                            <td>${network.SignalLevel || ''}</td>
-                            <td>${network.Mode || ''}</td>
-                            <td>${encryptionInfo}</td>
-                            <td>${network.Active || ''}</td>
-                            <td>${network.LastSeen || ''}</td>
-                            <td>${network.FirstSeen || ''}</td>
-                            <td>${network.Suspicious || ''}</td>
-                            <td>${network.Reason || ''}</td>
-                        `;
-                        olderNetworksTable.querySelector('tbody').appendChild(tr);
+                        olderNetworksTable.querySelector('tbody').appendChild(createTableRow(network));
                     });
                 });
         }

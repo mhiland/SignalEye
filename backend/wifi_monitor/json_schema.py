@@ -19,26 +19,16 @@ schema = {
                 "type": "object",
                 "properties": {
                     "Encryption": {"type": "string"},
-                    "WPA3": {"type": ["string", "null"]},
-                    "WPA2": {
+                    "RSN": {
                         "type": ["object", "null"],
                         "properties": {
                             "GroupCipher": {"type": "string"},
                             "PairwiseCiphers": {"type": "string"},
-                            "AuthenticationSuites": {"type": "string"}
+                            "AuthenticationSuites": {"type": "string"},
+                            "Capabilities": {"type": "string"}
                         },
                         "additionalProperties": False
-                    },
-                    "WPA": {
-                        "type": ["object", "null"],
-                        "properties": {
-                            "GroupCipher": {"type": "string"},
-                            "PairwiseCiphers": {"type": "string"},
-                            "AuthenticationSuites": {"type": "string"}
-                        },
-                        "additionalProperties": False
-                    },
-                    "WEP": {"type": ["string", "null"]}
+                    }
                 },
                 "required": ["Encryption"],
                 "additionalProperties": False

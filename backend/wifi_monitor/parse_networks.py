@@ -4,94 +4,62 @@ import json
 from parse_oui_database import lookup_manufacturer
 
 
+def extract_encryption_details(section):
+    """ Extract GroupCipher, PairwiseCiphers, and AuthenticationSuites from a section """
+    group_cipher = re.search(r'Group Cipher : (\w+)', section)
+    group_cipher = group_cipher.group(1) if group_cipher else None
+
+    pairwise_ciphers = re.search(r'Pairwise Ciphers \(\d+\) : ([\w\s]+?)(?=Authentication Suites)', section, re.DOTALL)
+    pairwise_ciphers = re.sub(r'\s+', ' ', pairwise_ciphers.group(1)).strip() if pairwise_ciphers else None
+
+    auth_suites_match = re.search(r'Authentication Suites \(\d+\) : ([\w\s()]+)', section, re.DOTALL)
+    auth_suites = auth_suites_match.group(1).strip() if auth_suites_match else ""
+
+    return {
+        "GroupCipher": group_cipher,
+        "PairwiseCiphers": pairwise_ciphers,
+        "AuthenticationSuites": ", ".join(auth_suites)
+    }, auth_suites
+
+
 def parse_encryption_info(cell_data):
     encryption_info = {
         "Encryption": "Open",
-        'WPA3': None,
-        "WPA2": None,
-        "WPA": None,
-        "WEP": None
+        'RSN': None
     }
 
     if "Encryption key:on" in cell_data:
         encryption_info["Encryption"] = "Enabled"
 
-        # Extract WPA3 information
-        wpa3_info = re.search(r'IE:.*?WPA3.*?(?=IE|$)', cell_data, re.DOTALL)
-        if wpa3_info:
-            wpa3_section = wpa3_info.group(0)
-            group_cipher = re.search(
-                r'Group Cipher : (\w+)',
-                wpa3_section).group(1)
-            pairwise_ciphers_match = re.search(
-                r'Pairwise Ciphers \(\d+\) : ([\w\s]+?)(?=Authentication Suites)',
-                wpa3_section,
-                re.DOTALL)
-            pairwise_ciphers = re.sub(
-                r'\s+',
-                ' ',
-                pairwise_ciphers_match.group(1)).strip() if pairwise_ciphers_match else None
-            auth_suites = re.search(
-                r'Authentication Suites \(\d+\) : (\w+)',
-                wpa3_section).group(1)
-            encryption_info['WPA3'] = {
-                'GroupCipher': group_cipher,
-                'PairwiseCiphers': pairwise_ciphers,
-                'AuthenticationSuites': auth_suites
-            }
-
-        # Extract WPA2 information
-        wpa2_info = re.search(
-            r'IE: IEEE 802\.11i/WPA2 Version 1.*?(?=(IE|$))',
-            cell_data,
-            re.DOTALL)
+        # Extract WPA2/WPA3 information
+        wpa2_info = re.search(r'IE: IEEE 802\.11i/WPA2 Version 1.*?(?=(IE|$))', cell_data, re.DOTALL)
         if wpa2_info:
             wpa2_section = wpa2_info.group(0)
-            pairwise_ciphers_match = re.search(
-                r'Pairwise Ciphers \(\d+\) : ([\w\s]+?)(?=Authentication Suites)',
-                wpa2_section,
-                re.DOTALL)
-            pairwise_ciphers = re.sub(
-                r'\s+',
-                ' ',
-                pairwise_ciphers_match.group(1)).strip() if pairwise_ciphers_match else None
-            encryption_info["WPA2"] = {
-                "GroupCipher": re.search(
-                    r'Group Cipher : (\w+)',
-                    wpa2_section).group(1),
-                "PairwiseCiphers": pairwise_ciphers,
-                "AuthenticationSuites": re.search(
-                    r'Authentication Suites \(\d+\) : (\w+)',
-                    wpa2_section).group(1)}
+            rsn_details, auth_suites = extract_encryption_details(wpa2_section)
+            encryption_info["RSN"] = rsn_details
+
+            if "PSK" in auth_suites:
+                if "unknown (8)" in auth_suites:
+                    encryption_info["Encryption"] = "WPA2/WPA3"
+                elif "unknown (4)" in auth_suites:
+                    encryption_info["Encryption"] = "WPA2/FT"
+                else:
+                    encryption_info["Encryption"] = "WPA2"
+            elif "unknown (8)" in auth_suites:
+                encryption_info["Encryption"] = "WPA3"
+
 
         # Extract WPA information
-        wpa_info = re.search(
-            r'IE: WPA Version 1.*?(?=(IE|$))',
-            cell_data,
-            re.DOTALL)
+        wpa_info = re.search(r'IE: WPA Version 1.*?(?=(IE|$))', cell_data, re.DOTALL)
         if wpa_info:
             wpa_section = wpa_info.group(0)
-            pairwise_ciphers_match = re.search(
-                r'Pairwise Ciphers \(\d+\) : ([\w\s]+?)(?=Authentication Suites)',
-                wpa_section,
-                re.DOTALL)
-            pairwise_ciphers = re.sub(
-                r'\s+',
-                ' ',
-                pairwise_ciphers_match.group(1)).strip() if pairwise_ciphers_match else None
-            encryption_info["WPA"] = {
-                "GroupCipher": re.search(
-                    r'Group Cipher : (\w+)',
-                    wpa_section).group(1),
-                "PairwiseCiphers": pairwise_ciphers,
-                "AuthenticationSuites": re.search(
-                    r'Authentication Suites \(\d+\) : (\w+)',
-                    wpa_section).group(1)}
+            wpa_details, auth_suites = extract_encryption_details(wpa_section)
+            encryption_info["RSN"] = wpa_details
+            encryption_info["Encryption"] = "WPA"
 
         # Check for WEP encryption
-        if "Encryption key:on" in cell_data and not (
-                wpa3_info or wpa2_info or wpa_info):
-            encryption_info["WEP"] = "Enabled"
+        if "Encryption key:on" in cell_data and not (wpa2_info or wpa_info):
+            encryption_info["Encryption"] = "WEP"
 
     return encryption_info
 

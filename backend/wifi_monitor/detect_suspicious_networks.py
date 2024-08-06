@@ -32,23 +32,7 @@ class NetworkAdapter:
     def get_encryption(self):
         encryption_info = self.network.get('EncryptionInfo', {})
         encryption_status = encryption_info.get('Encryption', 'Unknown')
-
-        if encryption_status == 'Enabled':
-            wpa3_info = encryption_info.get('WPA3')
-            wpa2_info = encryption_info.get('WPA2')
-            wpa_info = encryption_info.get('WPA')
-            wep_info = encryption_info.get('WEP')
-
-            if wpa3_info:
-                return "WPA3"
-            if wpa2_info:
-                return "WPA2"
-            if wpa_info:
-                return "WPA"
-            if wep_info == "Enabled":
-                return "WEP"
-            return "Unknown"
-        return "Open"
+        return encryption_status
 
     def get_address(self):
         return self.network.get('Address', 'Unknown')
@@ -134,6 +118,11 @@ class NetworkScanner(threading.Thread):
             # Check for weak encryption
             if encryption == 'WEP':
                 network.mark_suspicious('Weak encryption (WEP)')
+                self.observer.update(network.network)
+                self.seen_addresses.add(address)
+
+            if encryption == 'WPA':
+                network.mark_suspicious('Weak encryption (WPA)')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
