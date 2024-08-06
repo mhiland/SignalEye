@@ -6,7 +6,7 @@ os.environ['UNIT_TESTING'] = 'True'
 test_file_dir = os.path.dirname(os.path.abspath(__file__))
 module_path = os.path.abspath(os.path.join(test_file_dir, '../frontend'))
 sys.path.insert(0, module_path)
-from app import app, networks_data, DATA_FILE
+from app import app
 
 @pytest.fixture
 def client():
