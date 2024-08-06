@@ -16,12 +16,14 @@ app = Flask(__name__)
 DATA_FILE = '/var/log/wifi_monitor/persistent_networks.json'
 LOG_FILE = '/var/log/wifi_monitor/wifi_monitor.log'
 
-if os.path.exists(DATA_FILE):
-    with open(DATA_FILE, encoding='utf-8') as f:
-        networks_data = json.load(f)
-        validate(instance=networks_data, schema=schema)
-else:
-    networks_data = []
+def get_network_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, encoding='utf-8') as f:
+            networks_data = json.load(f)
+            validate(instance=networks_data, schema=schema)
+    else:
+        networks_data = []
+    return networks_data
 
 
 def filter_last_24_hours(data):
@@ -76,6 +78,7 @@ def data():
     recent_networks = []
     older_networks = []
 
+    networks_data = get_network_data()
     for network in networks_data:
         last_seen_str = network.get("LastSeen")
         last_seen_time = datetime.strptime(last_seen_str, "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC)
@@ -103,6 +106,7 @@ def data():
 
 @app.route('/download')
 def download():
+    networks_data = get_network_data()
     temp_file = io.BytesIO()
     temp_file.write(json.dumps(networks_data).encode('utf-8'))
     temp_file.seek(0)
@@ -126,6 +130,7 @@ def logs():
 
 @app.route('/spectrum')
 def spectrum():
+    networks_data = get_network_data()
     spectrum_data = process_data(networks_data)
     return render_template('spectrum.html', spectrum_data=json.dumps(spectrum_data))
 

@@ -44,71 +44,146 @@
     <script>
         const spectrumData = JSON.parse('{{ spectrum_data|safe }}');
 
-        function formatGroupedData(data) {
-            const groupedData = {};
-            const essidMap = {};
+        function calculatePointSizes(data) {
+            const pointSizeMap = {};
+
             data.forEach(d => {
-                const channel = d.channel;
-                const essid = d.essid || "Hidden SSID";
-                if (!groupedData[channel]) {
-                    groupedData[channel] = [];
-                    essidMap[channel] = [];
+                const key = `${d.channel}_${d.signal_level}`;
+                if (!pointSizeMap[key]) {
+                    pointSizeMap[key] = 0;
                 }
-                groupedData[channel].push(d.signal_level);
-                essidMap[channel].push(essid);
+                pointSizeMap[key]++;
             });
 
-            const labels = Object.keys(groupedData).map(channel => `Channel ${channel}`);
-            const datasets = [];
+            return pointSizeMap;
+        }
 
-            labels.forEach((label, labelIndex) => {
-                const channel = label.split(' ')[1];
-                groupedData[channel].forEach((signalLevel, index) => {
+        function formatScatterData(data, allChannels) {
+            const datasets = [];
+            const pointSizeMap = calculatePointSizes(data);
+
+            const groupedData = {};
+
+            data.forEach(d => {
+                const channel = d.channel;
+                if (!groupedData[channel]) {
+                    groupedData[channel] = [];
+                }
+                groupedData[channel].push(d);
+            });
+
+            Object.keys(groupedData).forEach(channel => {
+                groupedData[channel].forEach(d => {
+                    const essid = d.essid || "Hidden SSID";
+                    const bgColor = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`;
+                    const borderColor = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`;
+
+                    const key = `${channel}_${d.signal_level}`;
+                    const pointSize = pointSizeMap[key] * 5;
+
                     datasets.push({
-                        label: `${essidMap[channel][index]} (Channel ${channel})`,
-                        data: Array(labels.length).fill(null),
-                        backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`,
-                        borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
+                        label: `${essid} (Channel ${channel})`,
+                        data: [{
+                            x: channel,
+                            y: d.signal_level,
+                            r: pointSize
+                        }],
+                        backgroundColor: bgColor,
+                        borderColor: borderColor,
                         borderWidth: 1,
-                        dataIndex: labelIndex,
-                        signal_level: signalLevel
+                        hoverBackgroundColor: bgColor,
+                        hoverBorderColor: borderColor,
+                        hoverBorderWidth: 2
                     });
                 });
             });
 
-            // Populate the datasets with the correct signal levels
-            datasets.forEach(dataset => {
-                dataset.data[dataset.dataIndex] = dataset.signal_level;
-            });
-
             return {
-                labels: labels,
+                labels: allChannels.map(channel => `Channel ${channel}`),
                 datasets: datasets
             };
         }
 
+
         const ctx24 = document.getElementById('2.4ghzChartCanvas').getContext('2d');
         const ctx5 = document.getElementById('5ghzChartCanvas').getContext('2d');
 
+        const allChannels24GHz = [...Array(14).keys()].map(i => i + 1); // Channels 1 to 14
+        const allChannels5GHz = [36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 149, 153, 157, 161, 165];
+
         const chart24 = new Chart(ctx24, {
-            type: 'bar',
-            data: formatGroupedData(spectrumData['2.4GHz']),
+            type: 'bubble',
+            data: formatScatterData(spectrumData['2.4GHz'], allChannels24GHz),
             options: {
                 scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Channel'
+                        }
+                    },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Signal Level'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                let channel = tooltipItems[0].raw.x;
+                                return `Channel ${channel}`;
+                            },
+                            label: function(tooltipItem) {
+                                let datasetLabel = tooltipItem.dataset.label || '';
+                                let data = tooltipItem.raw;
+                                return `${datasetLabel}: (${data.x}, ${data.y}, ${data.r})`;
+                            }
+                        }
                     }
                 }
             }
         });
 
         const chart5 = new Chart(ctx5, {
-            type: 'bar',
-            data: formatGroupedData(spectrumData['5GHz']),
+            type: 'bubble',
+            data: formatScatterData(spectrumData['5GHz'], allChannels5GHz),
             options: {
                 scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Channel'
+                        }
+                    },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Signal Level'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                let channel = tooltipItems[0].raw.x;
+                                return `Channel ${channel}`;
+                            },
+                            label: function(tooltipItem) {
+                                let datasetLabel = tooltipItem.dataset.label || '';
+                                let data = tooltipItem.raw;
+                                return `${datasetLabel}: (${data.x}, ${data.y}, ${data.r})`;
+                            }
+                        }
                     }
                 }
             }

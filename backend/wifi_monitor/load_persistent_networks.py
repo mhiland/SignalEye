@@ -33,11 +33,8 @@ def save_persistent_networks(persistent_networks):
         logging.error("Validation error saving persistent networks.")
 
 
-def __parse_scan_results(data):
-    return data.split('Cell ')[1:]
-
 def save_training_data(networks):
-    networks = __parse_scan_results(networks)
+    networks = networks.split('Cell ')[1:]
 
     if not os.path.exists(TRAINING_DIR):
         os.makedirs(TRAINING_DIR)
