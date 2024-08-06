@@ -27,20 +27,19 @@ def update_networks_list(persistent_networks, current_networks):
     for current_net in current_networks:
         if 'ESSID' in current_net and 'Address' in current_net:
             network_identifier = (current_net['ESSID'], current_net['Address'])
+
             if network_identifier not in persistent_network_identifiers:
+                timestamp = datetime.now(pytz.UTC).strftime("%Y-%m-%d %H:%M:%S")
                 current_net['Active'] = True
-                current_net['LastSeen'] = datetime.now(pytz.UTC).strftime(
-                    "%Y-%m-%d %H:%M:%S")
-                current_net['FirstSeen'] = datetime.now(pytz.UTC).strftime(
-                    "%Y-%m-%d %H:%M:%S")
+                current_net['LastSeen'] = timestamp
+                current_net['FirstSeen'] = timestamp
                 persistent_networks.append(current_net)
-                logging.info(
-                    f"New network detected: {current_net['ESSID']} {current_net['Address']}")
-            elif network_identifier in persistent_network_identifiers:
+                persistent_network_identifiers.add(network_identifier)
+                logging.info(f"New network detected: {current_net['ESSID']} {current_net['Address']}")
+            else:
                 for net in persistent_networks:
                     if net['ESSID'] == current_net['ESSID'] and net['Address'] == current_net['Address']:
-                        net['LastSeen'] = datetime.now(pytz.UTC).strftime(
-                            "%Y-%m-%d %H:%M:%S")
+                        net['LastSeen'] = datetime.now(pytz.UTC).strftime("%Y-%m-%d %H:%M:%S")
                         net.update(current_net)
 
     persistent_networks.sort(
