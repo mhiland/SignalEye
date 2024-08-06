@@ -98,7 +98,7 @@
         const ctx5 = document.getElementById('5ghzChartCanvas').getContext('2d');
 
         const allChannels24GHz = [...Array(14).keys()].map(i => i + 1); // Channels 1 to 14
-        const allChannels5GHz = [...Array(24).keys()].map(i => i + 36); // Example for 5GHz channels
+        const allChannels5GHz = [36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 149, 153, 157, 161, 165];
 
         const chart24 = new Chart(ctx24, {
             type: 'bar',
