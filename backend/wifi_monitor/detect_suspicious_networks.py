@@ -40,6 +40,9 @@ class NetworkAdapter:
     def get_channel(self):
         return self.network.get('Channel', 'Unknown')
 
+    def get_frequency(self):
+        return self.network.get('Frequency', 'Unknown')
+
     def get_signal_strength(self):
         return self.network.get('Signal', 'Unknown')
 
@@ -95,19 +98,20 @@ class NetworkScanner(threading.Thread):
         encryption = network.get_encryption()
         address = network.get_address()
         channel = network.get_channel()
+        frequency = network.get_frequency()
         signal_strength = network.get_signal_strength()
 
         with self.lock:
             # Check for hidden SSID
-            if not ssid:
-                network.mark_suspicious('Hidden SSID')
-                self.observer.update(network.network)
-                self.seen_addresses.add(address)
-            # Check for short or unusual SSID names
-            elif len(ssid) < 3:
-                network.mark_suspicious('Short or unusual SSID name')
-                self.observer.update(network.network)
-                self.seen_addresses.add(address)
+            # if not ssid:
+            #     network.mark_suspicious('Hidden SSID')
+            #     self.observer.update(network.network)
+            #     self.seen_addresses.add(address)
+            # # Check for short or unusual SSID names
+            # elif len(ssid) < 3:
+            #     network.mark_suspicious('Short or unusual SSID name')
+            #     self.observer.update(network.network)
+            #     self.seen_addresses.add(address)
 
             # Check for open networks
             if encryption == 'Open':
@@ -137,8 +141,44 @@ class NetworkScanner(threading.Thread):
                 pass  # Ignore invalid signal strength values
 
             # Check for unusual channels
-            if channel not in map(str, range(1, 12)):
-                network.mark_suspicious('Unusual channel')
+            all_channels_24ghz = list(map(str, range(1, 12)))  # Channels 1 to 11 as strings. 12,13,14 uncommon or restricted
+
+            highly_suspicious_channels = list(map(str, [
+                120, 124, 128,  # U-NII-2C channels less commonly used or requiring DFS
+                169, 173, 177   # U-NII-3 channels often restricted or unauthorized
+            ]))
+
+            moderately_suspicious_channels = list(map(str, [
+                52, 56, 60, 64,     # U-NII-2A channels requiring DFS
+                100, 104, 108, 112, # U-NII-2C channels requiring DFS
+                116, 165,132, 136, 140, 144     # Remaining U-NII-2C and U-NII-3 channels of moderate concern
+            ]))
+
+            channels_of_interest = list(map(str, [
+                36, 40, 44, 48,     # U-NII-1 channels commonly used
+                149, 153, 157, 161  # U-NII-3 channels commonly used
+            ]))
+
+            # Default value if no condition meets
+            suspicious_message = None
+
+            # Check if the channel is not in the valid channels list based on the frequency
+            if frequency.startswith('2'):
+                if channel not in all_channels_24ghz:
+                    if channel == "14":
+                        suspicious_message = 'Restricted channel'
+                    else:
+                        suspicious_message = 'Unusual channel'
+            elif frequency.startswith('5'):
+                if channel in highly_suspicious_channels:
+                    suspicious_message = 'Highly suspicious channel'
+               # elif channel in moderately_suspicious_channels:
+               #     suspicious_message = 'Moderately suspicious channel'
+               # elif channel in channels_of_interest:
+               #     suspicious_message = 'Channel of interest'
+
+            if suspicious_message:
+                network.mark_suspicious(suspicious_message)
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 

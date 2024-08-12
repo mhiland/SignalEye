@@ -2,33 +2,18 @@ import os
 import re
 import json
 from parse_oui_database import lookup_manufacturer
-
-
-def extract_encryption_details(section):
-    """ Extract GroupCipher, PairwiseCiphers, and AuthenticationSuites from a section """
-    group_cipher = re.search(r'Group Cipher : (\w+)', section)
-    group_cipher = group_cipher.group(1) if group_cipher else None
-
-    pairwise_ciphers = re.search(r'Pairwise Ciphers \(\d+\) : ([\w\s]+?)(?=Authentication Suites)', section, re.DOTALL)
-    pairwise_ciphers = re.sub(r'\s+', ' ', pairwise_ciphers.group(1)).strip() if pairwise_ciphers else None
-
-    auth_suites_match = re.search(r'Authentication Suites \(\d+\) : ([\w\s()]+)', section, re.DOTALL)
-    auth_suites = auth_suites_match.group(1).strip() if auth_suites_match else ""
-
-    return {
-        "GroupCipher": group_cipher,
-        "PairwiseCiphers": pairwise_ciphers,
-        "AuthenticationSuites": ", ".join(auth_suites)
-    }, auth_suites
+import logging
+import logging_config
 
 
 def parse_encryption_info(cell_data):
     encryption_info = {
         "Encryption": "Open",
-        'RSN': None
+        "RSN": None
     }
 
     if "Encryption key:on" in cell_data:
+        # Default to Enabled if encryption key is on
         encryption_info["Encryption"] = "Enabled"
 
         # Extract WPA2/WPA3 information
@@ -38,16 +23,19 @@ def parse_encryption_info(cell_data):
             rsn_details, auth_suites = extract_encryption_details(wpa2_section)
             encryption_info["RSN"] = rsn_details
 
-            if "PSK" in auth_suites:
-                if "unknown (8)" in auth_suites:
-                    encryption_info["Encryption"] = "WPA2/WPA3"
-                elif "unknown (4)" in auth_suites:
-                    encryption_info["Encryption"] = "WPA2/FT"
-                else:
+            # Determine WPA2, WPA3, or FT based on Authentication Suites
+            if auth_suites:
+                if "PSK" in auth_suites:
+                    if "unknown (8)" in auth_suites:
+                        encryption_info["Encryption"] = "WPA2/WPA3"
+                    elif "unknown (4)" in auth_suites:
+                        encryption_info["Encryption"] = "WPA2/FT"
+                    else:
+                        encryption_info["Encryption"] = "WPA2"
+                elif "unknown (8)" in auth_suites:
+                    encryption_info["Encryption"] = "WPA3"
+                elif "802.1x" in auth_suites:
                     encryption_info["Encryption"] = "WPA2"
-            elif "unknown (8)" in auth_suites:
-                encryption_info["Encryption"] = "WPA3"
-
 
         # Extract WPA information
         wpa_info = re.search(r'IE: WPA Version 1.*?(?=(IE|$))', cell_data, re.DOTALL)
@@ -57,37 +45,73 @@ def parse_encryption_info(cell_data):
             encryption_info["RSN"] = wpa_details
             encryption_info["Encryption"] = "WPA"
 
-        # Check for WEP encryption
-        if "Encryption key:on" in cell_data and not (wpa2_info or wpa_info):
+        # Check for WEP encryption (fall-back if no WPA/WPA2/WPA3 found)
+        if not wpa2_info and not wpa_info:
             encryption_info["Encryption"] = "WEP"
 
     return encryption_info
 
 
+def extract_encryption_details(section):
+    """ Extract GroupCipher, PairwiseCiphers, and AuthenticationSuites from a section """
+    group_cipher = re.search(r'Group Cipher : (\w+)', section)
+    group_cipher = group_cipher.group(1) if group_cipher else None
+
+    pairwise_ciphers = re.search(r'Pairwise Ciphers \(\d+\) : ([\w\s]+?)(?=\n|Authentication Suites)', section, re.DOTALL)
+    pairwise_ciphers = re.sub(r'\s+', ' ', pairwise_ciphers.group(1)).strip() if pairwise_ciphers else None
+
+    auth_suites_match = re.search(r'Authentication Suites \(\d+\) : ([\w\s/.(),]+)', section, re.DOTALL)
+    if auth_suites_match:
+        auth_suites = auth_suites_match.group(1).strip()
+    else:
+        auth_suites = None
+
+    return {
+        "GroupCipher": group_cipher,
+        "PairwiseCiphers": pairwise_ciphers,
+        "AuthenticationSuites": auth_suites
+    }, auth_suites
+
+
 def parse_cell_information(cell_data):
     info = {}
     try:
+        # Extract ESSID
         essid_match = re.search(r'ESSID:"([^"]*)"', cell_data)
         info["ESSID"] = essid_match.group(1) if essid_match else ""
-        address = re.search(r'Address: ([\w:]+)', cell_data).group(1)
-        info["Address"] = address
-        info["Manufacturer"] = lookup_manufacturer(address)
-        info["Frequency"] = re.search(
-            r'Frequency:([\d\.]+ GHz)',
-            cell_data).group(1).split(' ')[0]
-        info["Channel"] = re.search(r'Channel:(\d+)', cell_data).group(1)
-        info["Quality"] = re.search(
-            r'Quality=([\d/]+)',
-            cell_data).group(1).split('/')[0]
-        info["SignalLevel"] = re.search(
-            r'Signal level=([\-\d]+ dBm)',
-            cell_data).group(1).split(' ')[0]
-        mode = re.search(r'Mode:(\w+)', cell_data).group(1)
+
+        # Extract MAC Address (BSSID)
+        address_match = re.search(r'Address: ([\w:]+)', cell_data)
+        info["Address"] = address_match.group(1) if address_match else ""
+
+        # Lookup Manufacturer based on MAC Address
+        info["Manufacturer"] = lookup_manufacturer(info["Address"])
+
+        # Extract Frequency
+        frequency_match = re.search(r'Frequency:([\d\.]+ GHz)', cell_data)
+        info["Frequency"] = frequency_match.group(1).split(' ')[0] if frequency_match else ""
+
+        # Extract Channel
+        channel_match = re.search(r'Channel:(\d+)', cell_data)
+        info["Channel"] = channel_match.group(1) if channel_match else ""
+
+        # Extract Quality
+        quality_match = re.search(r'Quality=([\d/]+)', cell_data)
+        info["Quality"] = quality_match.group(1).split('/')[0] if quality_match else ""
+
+        # Extract Signal Level
+        signal_level_match = re.search(r'Signal level=([\-\d]+ dBm)', cell_data)
+        info["SignalLevel"] = signal_level_match.group(1).split(' ')[0] if signal_level_match else ""
+
+        # Extract Mode
+        mode_match = re.search(r'Mode:(\w+)', cell_data)
+        mode = mode_match.group(1) if mode_match else "Unknown"
         if mode == 'Unknown/bug':
             mode = 'Unknown'
         info["Mode"] = mode
-    except AttributeError:
-        pass  # Handle cases where one of the regex does not match
+    except AttributeError as e:
+        logging.error(f"An error occurred while parsing cell information. {e}")
+        logging.debug(f"Cell data causing error: {cell_data}")
 
     return info
 
