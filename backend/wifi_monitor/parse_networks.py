@@ -1,7 +1,7 @@
 import os
 import re
 import json
-from parse_oui_database import lookup_manufacturer
+from parse_oui_database import OUILookup
 import logging
 import logging_config
 
@@ -85,7 +85,8 @@ def parse_cell_information(cell_data):
         info["Address"] = address_match.group(1) if address_match else ""
 
         # Lookup Manufacturer based on MAC Address
-        info["Manufacturer"] = lookup_manufacturer(info["Address"])
+        _ouilookup_instance = OUILookup()
+        info["Manufacturer"] = _ouilookup_instance.lookup_manufacturer(info["Address"], info["ESSID"] )
 
         # Extract Frequency
         frequency_match = re.search(r'Frequency:([\d\.]+ GHz)', cell_data)
