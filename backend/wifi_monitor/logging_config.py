@@ -19,7 +19,7 @@ if ENABLE_FILE_LOGGING:
     logger.addHandler(file_handler)
 
 stream_handler = logging.StreamHandler(sys.stdout)
-stream_handler.setLevel(logging.INFO)
+stream_handler.setLevel(logging.DEBUG)
 stream_formatter = logging.Formatter(LOG_FORMAT)
 stream_handler.setFormatter(stream_formatter)
 logger.addHandler(stream_handler)
