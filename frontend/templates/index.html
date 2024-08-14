@@ -62,10 +62,18 @@
                         return `${seconds} s`;
                     }
 
+                    // Helper function to convert UTC to local time
+                    function utcToLocal(utcDateStr) {
+                        const date = new Date(utcDateStr + 'Z');
+                        return date.toLocaleString();
+                    }
+
                     // Helper function to create table rows
                     function createTableRow(network) {
                         let encryptionInfo = network['EncryptionInfo'] ? network['EncryptionInfo']['Encryption'] : '';
                         let formattedUptime = formatUptime(parseFloat(network.Uptime || '0'));
+                        let lastSeenLocal = network.LastSeen ? utcToLocal(network.LastSeen) : '';
+                        let firstSeenLocal = network.FirstSeen ? utcToLocal(network.FirstSeen) : '';
                         let tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${network.ESSID || ''}</td>
@@ -79,8 +87,8 @@
                             <td>${encryptionInfo}</td>
                             <td>${network.Active || ''}</td>
                             <td>${formattedUptime}</td>
-                            <td>${network.LastSeen || ''}</td>
-                            <td>${network.FirstSeen || ''}</td>
+                            <td>${lastSeenLocal || ''}</td>
+                            <td>${firstSeenLocal || ''}</td>
                             <td>${network.Suspicious || ''}</td>
                             <td>${network.Reason || ''}</td>
                         `;
