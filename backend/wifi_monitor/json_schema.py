@@ -34,6 +34,7 @@ schema = {
                 "additionalProperties": False
             },
             "Active": {"type": "boolean"},
+            "Uptime": {"type": "string"},
             "LastSeen": {"type": "string", "format": "date-time"},
             "FirstSeen": {"type": "string", "format": "date-time"},
             "Suspicious": {"type": "boolean"},

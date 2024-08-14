@@ -48,6 +48,7 @@ def test_add_new_network(mock_datetime, setup_networks):
         'Address': '11:22:33:44:55:66',
         'additional_info': 'current info',
         'Active': True,
+        'Uptime': '0.0006944444444444445',
         'FirstSeen': fake_now.strftime("%Y-%m-%d %H:%M:%S"),
         'LastSeen': fake_now.strftime("%Y-%m-%d %H:%M:%S")
     }

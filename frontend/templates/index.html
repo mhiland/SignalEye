@@ -40,9 +40,32 @@
                     recentNetworksTable.querySelector('tbody').innerHTML = '';
                     olderNetworksTable.querySelector('tbody').innerHTML = '';
 
+                    // Helper function to format uptime
+                    function formatUptime(uptimeFraction) {
+                        let totalSeconds = uptimeFraction * 24 * 60 * 60; // Convert fraction of days to seconds
+                        let years = Math.floor(totalSeconds / (365 * 24 * 60 * 60));
+                        if (years > 0) return `${years} y`;
+
+                        totalSeconds %= (365 * 24 * 60 * 60);
+                        let days = Math.floor(totalSeconds / (24 * 60 * 60));
+                        if (days > 0) return `${days} d`;
+
+                        totalSeconds %= (24 * 60 * 60);
+                        let hours = Math.floor(totalSeconds / (60 * 60));
+                        if (hours > 0) return `${hours} h`;
+
+                        totalSeconds %= (60 * 60);
+                        let minutes = Math.floor(totalSeconds / 60);
+                        if (minutes > 0) return `${minutes} m`;
+
+                        let seconds = totalSeconds % 60;
+                        return `${seconds} s`;
+                    }
+
                     // Helper function to create table rows
                     function createTableRow(network) {
                         let encryptionInfo = network['EncryptionInfo'] ? network['EncryptionInfo']['Encryption'] : '';
+                        let formattedUptime = formatUptime(parseFloat(network.Uptime || '0'));
                         let tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${network.ESSID || ''}</td>
@@ -55,6 +78,7 @@
                             <td>${network.Mode || ''}</td>
                             <td>${encryptionInfo}</td>
                             <td>${network.Active || ''}</td>
+                            <td>${formattedUptime}</td>
                             <td>${network.LastSeen || ''}</td>
                             <td>${network.FirstSeen || ''}</td>
                             <td>${network.Suspicious || ''}</td>
@@ -101,6 +125,7 @@
                 <th>Mode</th>
                 <th>Encryption</th>
                 <th>Active</th>
+                <th>Uptime</th>
                 <th>Last Seen</th>
                 <th>First Seen</th>
                 <th>Suspicious</th>
@@ -126,6 +151,7 @@
                 <th>Mode</th>
                 <th>Encryption</th>
                 <th>Active</th>
+                <th>Uptime</th>
                 <th>Last Seen</th>
                 <th>First Seen</th>
                 <th>Suspicious</th>

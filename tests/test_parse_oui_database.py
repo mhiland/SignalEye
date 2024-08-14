@@ -15,14 +15,8 @@ def test_similarity_mac():
     essid2 = "BC Group 2024BC -5G"
 
     _ouilookup_instance = OUILookup()
-
-    # Calculate MAC similarity score
     mac_similarity_score = _ouilookup_instance.similarity(mac1, mac2)
-
-    # Calculate ESSID similarity score
     essid_similarity_score = _ouilookup_instance.similarity(essid1, essid2)
-
-    # Combined score, equally weighted
     combined_score = (mac_similarity_score + essid_similarity_score) / 2
 
     assert mac_similarity_score == pytest.approx(0.8334, 0.0001)
@@ -36,14 +30,8 @@ def test_non_similarity_mac():
     essid2 = "TELUS6666"
 
     _ouilookup_instance = OUILookup()
-
-    # Calculate MAC similarity score
     mac_similarity_score = _ouilookup_instance.similarity(mac1, mac2)
-
-    # Calculate ESSID similarity score
     essid_similarity_score = _ouilookup_instance.similarity(essid1, essid2)
-
-    # Combined score, equally weighted
     combined_score = (mac_similarity_score + essid_similarity_score) / 2
 
     assert mac_similarity_score <= 0.0
