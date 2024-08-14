@@ -25,6 +25,7 @@ valid_data = [
             "RSN": None
         },
         "Active": True,
+        "Uptime": "0.01875",
         "LastSeen": "2024-08-04 06:13:39",
         "FirstSeen": "2024-07-29 05:49:48",
         "Suspicious": True,
