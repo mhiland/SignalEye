@@ -54,8 +54,11 @@ class NetworkAdapter:
             existing_reasons = self.network['Reason'].split('; ')
             if reason not in existing_reasons:
                 self.network['Reason'] += f"; {reason}"
+                logging.info(f"Suspicious Network: SSID={self.get_ssid()}, MAC={self.get_address()}, Reason={reason}")
+
         else:
             self.network['Reason'] = reason
+            logging.info(f"Suspicious Network: SSID={self.get_ssid()}, MAC={self.get_address()}, Reason={reason}")
 
 # Factory pattern
 class NetworkFactory:
@@ -111,20 +114,17 @@ class NetworkScanner(threading.Thread):
 
             # Check for open networks
             if encryption == 'Open':
-                logging.info(f"Open network: {ssid} {address}")
                 network.mark_suspicious('Open network')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
             # Check for weak encryption
             if encryption == 'WEP':
-                logging.info(f"Weak encryption (WEP): {ssid} {address}")
                 network.mark_suspicious('Weak encryption (WEP)')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
             if encryption == 'WPA':
-                logging.info(f"Weak encryption (WPA): {ssid} {address}")
                 network.mark_suspicious('Weak encryption (WPA)')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
@@ -133,7 +133,6 @@ class NetworkScanner(threading.Thread):
             try:
                 signal_strength_value = int(signal_strength)
                 if signal_strength_value > -30:
-                    logging.info(f"Abnormally high signal strength: {ssid} {address}")
                     network.mark_suspicious('Abnormally high signal strength')
                     self.observer.update(network.network)
                     self.seen_addresses.add(address)
@@ -178,7 +177,6 @@ class NetworkScanner(threading.Thread):
                #     suspicious_message = 'Channel of interest'
 
             if suspicious_message:
-                logging.info(f"{suspicious_message}: {ssid} {address} {channel}")
                 network.mark_suspicious(suspicious_message)
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
@@ -186,13 +184,11 @@ class NetworkScanner(threading.Thread):
             # Manually check for known Hak5 MAC address prefixes
             if any(address.startswith(prefix)
                    for prefix in self.HAK5_MAC_PREFIXES):
-                logging.info(f"Possible WiFi Pineapple device: {ssid} {address}")
                 network.mark_suspicious('Possible WiFi Pineapple device')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
 
             if ssid.startswith("Pineapple"):
-                logging.info(f"Possible WiFi Pineapple device: {ssid} {address}")
                 network.mark_suspicious('Possible WiFi Pineapple device')
                 self.observer.update(network.network)
                 self.seen_addresses.add(address)
@@ -229,7 +225,6 @@ class NetworkScanner(threading.Thread):
                             network.mark_suspicious('SSID spoofing detected')
                             self.observer.update(network.network)
                             self.seen_addresses.add(network.get_address())
-                            logging.info(f"SSID spoofing detected: {ssid} {addresses}")
 
 
 # Usage
