@@ -30,6 +30,8 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        let radarChart;
+
         function fetchData() {
             fetch('/data')
                 .then(response => response.json())
@@ -37,22 +39,22 @@
                     const recentNetworksTable = document.getElementById('recent-networks');
                     const olderNetworksTable = document.getElementById('older-networks');
 
-                      // Clear existing data
-                      recentNetworksTable.querySelector('tbody').innerHTML = '';
-                      olderNetworksTable.querySelector('tbody').innerHTML = '';
+                    // Clear existing data
+                    recentNetworksTable.querySelector('tbody').innerHTML = '';
+                    olderNetworksTable.querySelector('tbody').innerHTML = '';
 
-                      // Prepare data for radar chart
-                      const labels = data.recent_networks.map(network => network.ESSID);
-                      const qualities = data.recent_networks.map(network => network.Quality / 100);
-                      const signalLevels = data.recent_networks.map(network => {
-                          const maxSignal = Math.min(...data.recent_networks.map(n => n.SignalLevel));
-                          return Math.abs(network.SignalLevel) / maxSignal;
-                      });
-                      const uptimes = data.recent_networks.map(network => network.Uptime / Math.max(...data.recent_networks.map(n => n.Uptime)));
+                    // Prepare data for radar chart
+                    const labels = data.recent_networks.map(network => network.ESSID);
+                    const qualities = data.recent_networks.map(network => network.Quality / 100);
+                    const signalLevels = data.recent_networks.map(network => {
+                        const maxSignal = Math.min(...data.recent_networks.map(n => n.SignalLevel));
+                        return Math.abs(network.SignalLevel) / maxSignal;
+                    });
+                    const uptimes = data.recent_networks.map(network => network.Uptime / Math.max(...data.recent_networks.map(n => n.Uptime)));
 
                     // Helper function to format uptime
                     function formatUptime(uptimeFraction) {
-                        let totalSeconds = uptimeFraction * 24 * 60 * 60; // Convert fraction of days to seconds
+                        let totalSeconds = uptimeFraction * 24 * 60 * 60;
                         let years = Math.floor(totalSeconds / (365 * 24 * 60 * 60));
                         if (years > 0) return `${years} y`;
 
@@ -115,15 +117,28 @@
                         olderNetworksTable.querySelector('tbody').appendChild(createTableRow(network));
                     });
 
-                    renderRadarChart(labels, qualities, signalLevels, uptimes);
+                    updateRadarChart(labels, qualities, signalLevels, uptimes);
                 })
                 .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function updateRadarChart(labels, qualities, signalLevels, uptimes) {
+            if (radarChart) {
+                radarChart.data.labels = labels;
+                radarChart.data.datasets[0].data = qualities;
+                radarChart.data.datasets[1].data = signalLevels;
+                radarChart.data.datasets[2].data = uptimes;
+                radarChart.update();
+            } else {
+                renderRadarChart(labels, qualities, signalLevels, uptimes);
+            }
         }
 
         // Render the radar chart
         function renderRadarChart(labels, qualities, signalLevels, uptimes) {
             var ctx = document.getElementById('radarChart').getContext('2d');
-            new Chart(ctx, {
+
+            radarChart = new Chart(ctx, {
                 type: 'radar',
                 data: {
                     labels: labels,
@@ -152,9 +167,16 @@
                     ]
                 },
                 options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
                     scale: {
                         ticks: {
                             beginAtZero: true
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.1
                         }
                     }
                 }
