@@ -27,7 +27,9 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 def monitor_wifi(interval=60):
     persistent_networks = load_persistent_networks()
-    logging.info("WiFi monitor is starting...")
+    wlan_env = os.getenv('WLAN', '0')
+    interface = f"wlan{wlan_env}"
+    logging.info(f"WiFi monitor is starting ({interface})...")
     try:
         while True:
             scan_output = scan_wifi()

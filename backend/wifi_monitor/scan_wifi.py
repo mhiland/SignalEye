@@ -4,8 +4,10 @@ import subprocess
 
 def scan_wifi():
     try:
+        wlan_env = os.getenv('WLAN', '0')
+        interface = f"wlan{wlan_env}"
         result = subprocess.run(
-            ['iwlist', 'wlan0', 'scan'], capture_output=True, text=True, timeout=30)
+            ['iwlist', interface, 'scan'], capture_output=True, text=True, timeout=30)
         return result.stdout
     except subprocess.TimeoutExpired:
         print("iwlist scan timed out.")

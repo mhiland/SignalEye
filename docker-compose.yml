@@ -9,12 +9,11 @@ services:
     cap_add:
       - NET_ADMIN
       - NET_RAW
-    ports:
-      - "5000:5000"
     volumes:
       - /var/log/wifi_monitor:/var/log/wifi_monitor
     container_name: wifi_monitor_bundled
     command: sh -c "python3 backend/wifi_monitor/wifi_monitor.py & python3 frontend/app.py"
     environment:
       - PYTHONUNBUFFERED=1
+      - WLAN=${wlan:-0}  # Default to wlan0 if not set
     restart: unless-stopped

@@ -1,4 +1,5 @@
 import os
+import codecs
 import re
 import json
 from parse_oui_database import OUILookup
@@ -73,12 +74,26 @@ def extract_encryption_details(section):
     }, auth_suites
 
 
+def clean_ssid_string(ssid: str) -> str:
+    try:
+        hex_pattern = re.compile(r'\\x[0-9A-Fa-f]{2}')
+        if hex_pattern.search(ssid):
+            decoded_ssid = codecs.decode(ssid.encode(), 'unicode_escape').decode('utf-8')
+            return decoded_ssid
+        else:
+            return ssid
+    except Exception as e:
+        logging.error(f"Error decoding SSID ({ssid}): {e}")
+        return ssid 
+
+
 def parse_cell_information(cell_data):
     info = {}
     try:
         # Extract ESSID
         essid_match = re.search(r'ESSID:"([^"]*)"', cell_data)
-        info["ESSID"] = essid_match.group(1) if essid_match else ""
+        raw_essid = essid_match.group(1) if essid_match else ""
+        info["ESSID"] = clean_ssid_string(raw_essid)
 
         # Extract MAC Address (BSSID)
         address_match = re.search(r'Address: ([\w:]+)', cell_data)

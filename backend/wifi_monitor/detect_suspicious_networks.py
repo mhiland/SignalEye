@@ -43,7 +43,7 @@ class NetworkAdapter:
         return self.network.get('Frequency', 'Unknown')
 
     def get_signal_strength(self):
-        return self.network.get('Signal', 'Unknown')
+        return self.network.get('SignalLevel', 'Unknown')
 
     def get_manufacturer(self):
         return self.network.get('Manufacturer', 'Unknown')
