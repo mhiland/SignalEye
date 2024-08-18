@@ -1,4 +1,6 @@
 pylint
+wrapt
+astroid
 pre-commit
 pytest
 jsonschema

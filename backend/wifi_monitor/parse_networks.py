@@ -80,11 +80,10 @@ def clean_ssid_string(ssid: str) -> str:
         if hex_pattern.search(ssid):
             decoded_ssid = codecs.decode(ssid.encode(), 'unicode_escape').decode('utf-8')
             return decoded_ssid
-        else:
-            return ssid
+        return ssid
     except Exception as e:
         logging.error(f"Error decoding SSID ({ssid}): {e}")
-        return ssid 
+        return ssid
 
 
 def parse_cell_information(cell_data):

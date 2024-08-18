@@ -1,6 +1,6 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v2.7.4  # Use the latest stable version
+  - repo: https://github.com/pylint-dev/pylint
+    rev: v2.17.7
     hooks:
       - id: pylint
         args: ['--rcfile=.pylintrc']
