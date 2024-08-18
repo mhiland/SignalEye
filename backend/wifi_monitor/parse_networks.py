@@ -78,8 +78,10 @@ def clean_ssid_string(ssid: str) -> str:
     try:
         hex_pattern = re.compile(r'\\x[0-9A-Fa-f]{2}')
         if hex_pattern.search(ssid):
-            decoded_ssid = codecs.decode(ssid.encode(), 'unicode_escape').decode('utf-8')
-            return decoded_ssid
+            ssid = codecs.decode(ssid, 'unicode_escape')
+
+        ssid = ssid.replace('\u0000', '')
+
         return ssid
     except Exception as e:
         logging.error(f"Error decoding SSID ({ssid}): {e}")
