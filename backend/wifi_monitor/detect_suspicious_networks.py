@@ -4,6 +4,8 @@ import logging
 import logging_config
 
 # Observer pattern
+
+
 class Observer(ABC):
     @abstractmethod
     def update(self, network):
@@ -54,13 +56,17 @@ class NetworkAdapter:
             existing_reasons = self.network['Reason'].split('; ')
             if reason not in existing_reasons:
                 self.network['Reason'] += f"; {reason}"
-                logging.info(f"Suspicious Network: SSID={self.get_ssid()}, MAC={self.get_address()}, Reason={reason}")
+                logging.info(
+                    f"Suspicious Network: SSID={self.get_ssid()}, MAC={self.get_address()}, Reason={reason}")
 
         else:
             self.network['Reason'] = reason
-            logging.info(f"Suspicious Network: SSID={self.get_ssid()}, MAC={self.get_address()}, Reason={reason}")
+            logging.info(
+                f"Suspicious Network: SSID={self.get_ssid()}, MAC={self.get_address()}, Reason={reason}")
 
 # Factory pattern
+
+
 class NetworkFactory:
     @staticmethod
     def create_network(network_data):
@@ -140,7 +146,8 @@ class NetworkScanner(threading.Thread):
                 pass  # Ignore invalid signal strength values
 
             # Check for unusual channels
-            all_channels_24ghz = list(map(str, range(1, 12)))  # Channels 1 to 11 as strings. 12,13,14 uncommon or restricted
+            # Channels 1 to 11 as strings. 12,13,14 uncommon or restricted
+            all_channels_24ghz = list(map(str, range(1, 12)))
 
             highly_suspicious_channels = list(map(str, [
                 120, 124, 128,  # U-NII-2C channels less commonly used or requiring DFS
@@ -149,8 +156,9 @@ class NetworkScanner(threading.Thread):
 
             moderately_suspicious_channels = list(map(str, [
                 52, 56, 60, 64,     # U-NII-2A channels requiring DFS
-                100, 104, 108, 112, # U-NII-2C channels requiring DFS
-                116, 165,132, 136, 140, 144     # Remaining U-NII-2C and U-NII-3 channels of moderate concern
+                100, 104, 108, 112,  # U-NII-2C channels requiring DFS
+                # Remaining U-NII-2C and U-NII-3 channels of moderate concern
+                116, 165, 132, 136, 140, 144
             ]))
 
             channels_of_interest = list(map(str, [
@@ -161,7 +169,8 @@ class NetworkScanner(threading.Thread):
             # Default value if no condition meets
             suspicious_message = None
 
-            # Check if the channel is not in the valid channels list based on the frequency
+            # Check if the channel is not in the valid channels list based on
+            # the frequency
             if frequency.startswith('2'):
                 if channel not in all_channels_24ghz:
                     if channel == "14":

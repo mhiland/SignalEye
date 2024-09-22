@@ -7,40 +7,66 @@ schema = {
     "items": {
         "type": "object",
         "properties": {
-            "ESSID": {"type": "string"},
-            "Address": {"type": "string"},
-            "Manufacturer": {"type": "string"},
-            "Frequency": {"type": "string"},
-            "Channel": {"type": "string"},
-            "Quality": {"type": "string"},
-            "SignalLevel": {"type": "string"},
-            "Mode": {"type": "string"},
+            "ESSID": {
+                "type": "string"},
+            "Address": {
+                "type": "string"},
+            "Manufacturer": {
+                "type": "string"},
+            "Frequency": {
+                "type": "string"},
+            "Channel": {
+                "type": "string"},
+            "Quality": {
+                "type": "string"},
+            "SignalLevel": {
+                "type": "string"},
+            "Mode": {
+                "type": "string"},
             "EncryptionInfo": {
                 "type": "object",
                 "properties": {
-                    "Encryption": {"type": "string"},
+                    "Encryption": {
+                        "type": "string"},
                     "RSN": {
-                        "type": ["object", "null"],
+                        "type": [
+                            "object",
+                            "null"],
                         "properties": {
-                            "GroupCipher": {"type": "string"},
-                            "PairwiseCiphers": {"type": "string"},
-                            "AuthenticationSuites": {"type": "string"},
-                            "Capabilities": {"type": "string"}
-                        },
-                        "additionalProperties": False
-                    }
-                },
+                            "GroupCipher": {
+                                "type": "string"},
+                            "PairwiseCiphers": {
+                                "type": "string"},
+                            "AuthenticationSuites": {
+                                "type": "string"},
+                            "Capabilities": {
+                                "type": "string"}},
+                        "additionalProperties": False}},
                 "required": ["Encryption"],
-                "additionalProperties": False
-            },
-            "Active": {"type": "boolean"},
-            "Uptime": {"type": "string"},
-            "LastSeen": {"type": "string", "format": "date-time"},
-            "FirstSeen": {"type": "string", "format": "date-time"},
-            "Suspicious": {"type": "boolean"},
-            "Reason": {"type": "string"}
-        },
-        "required": ["Address", "Manufacturer", "Frequency", "Channel", "Quality", "SignalLevel", "EncryptionInfo", "Active", "LastSeen", "FirstSeen"],
-        "additionalProperties": False
-    }
-}
+                "additionalProperties": False},
+            "Active": {
+                "type": "boolean"},
+            "Uptime": {
+                "type": "string"},
+            "LastSeen": {
+                "type": "string",
+                "format": "date-time"},
+            "FirstSeen": {
+                "type": "string",
+                "format": "date-time"},
+            "Suspicious": {
+                "type": "boolean"},
+            "Reason": {
+                "type": "string"}},
+        "required": [
+            "Address",
+            "Manufacturer",
+            "Frequency",
+            "Channel",
+            "Quality",
+            "SignalLevel",
+            "EncryptionInfo",
+            "Active",
+            "LastSeen",
+            "FirstSeen"],
+        "additionalProperties": False}}

@@ -1,5 +1,6 @@
 import subprocess
-import time, pytz
+import time
+import pytz
 import os
 from datetime import datetime
 

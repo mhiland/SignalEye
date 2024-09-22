@@ -7,6 +7,10 @@ Install runtime requirements
 
 > sudo apt-get install docker-compose
 
+> sudo usermod -aG docker $USER
+
+> newgrp docker
+
 > sudo pip install -r requirements.txt
 
 > pre-commit install

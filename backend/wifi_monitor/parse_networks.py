@@ -18,7 +18,10 @@ def parse_encryption_info(cell_data):
         encryption_info["Encryption"] = "Enabled"
 
         # Extract WPA2/WPA3 information
-        wpa2_info = re.search(r'IE: IEEE 802\.11i/WPA2 Version 1.*?(?=(IE|$))', cell_data, re.DOTALL)
+        wpa2_info = re.search(
+            r'IE: IEEE 802\.11i/WPA2 Version 1.*?(?=(IE|$))',
+            cell_data,
+            re.DOTALL)
         if wpa2_info:
             wpa2_section = wpa2_info.group(0)
             rsn_details, auth_suites = extract_encryption_details(wpa2_section)
@@ -39,7 +42,10 @@ def parse_encryption_info(cell_data):
                     encryption_info["Encryption"] = "WPA2"
 
         # Extract WPA information
-        wpa_info = re.search(r'IE: WPA Version 1.*?(?=(IE|$))', cell_data, re.DOTALL)
+        wpa_info = re.search(
+            r'IE: WPA Version 1.*?(?=(IE|$))',
+            cell_data,
+            re.DOTALL)
         if wpa_info:
             wpa_section = wpa_info.group(0)
             wpa_details, auth_suites = extract_encryption_details(wpa_section)
@@ -58,10 +64,19 @@ def extract_encryption_details(section):
     group_cipher = re.search(r'Group Cipher : (\w+)', section)
     group_cipher = group_cipher.group(1) if group_cipher else None
 
-    pairwise_ciphers = re.search(r'Pairwise Ciphers \(\d+\) : ([\w\s]+?)(?=\n|Authentication Suites)', section, re.DOTALL)
-    pairwise_ciphers = re.sub(r'\s+', ' ', pairwise_ciphers.group(1)).strip() if pairwise_ciphers else None
+    pairwise_ciphers = re.search(
+        r'Pairwise Ciphers \(\d+\) : ([\w\s]+?)(?=\n|Authentication Suites)',
+        section,
+        re.DOTALL)
+    pairwise_ciphers = re.sub(
+        r'\s+',
+        ' ',
+        pairwise_ciphers.group(1)).strip() if pairwise_ciphers else None
 
-    auth_suites_match = re.search(r'Authentication Suites \(\d+\) : ([\w\s/.(),]+)', section, re.DOTALL)
+    auth_suites_match = re.search(
+        r'Authentication Suites \(\d+\) : ([\w\s/.(),]+)',
+        section,
+        re.DOTALL)
     if auth_suites_match:
         auth_suites = auth_suites_match.group(1).strip()
     else:
@@ -102,11 +117,13 @@ def parse_cell_information(cell_data):
 
         # Lookup Manufacturer based on MAC Address
         _ouilookup_instance = OUILookup()
-        info["Manufacturer"] = _ouilookup_instance.lookup_manufacturer(info["Address"], info["ESSID"] )
+        info["Manufacturer"] = _ouilookup_instance.lookup_manufacturer(
+            info["Address"], info["ESSID"])
 
         # Extract Frequency
         frequency_match = re.search(r'Frequency:([\d\.]+ GHz)', cell_data)
-        info["Frequency"] = frequency_match.group(1).split(' ')[0] if frequency_match else ""
+        info["Frequency"] = frequency_match.group(
+            1).split(' ')[0] if frequency_match else ""
 
         # Extract Channel
         channel_match = re.search(r'Channel:(\d+)', cell_data)
@@ -114,11 +131,14 @@ def parse_cell_information(cell_data):
 
         # Extract Quality
         quality_match = re.search(r'Quality=([\d/]+)', cell_data)
-        info["Quality"] = quality_match.group(1).split('/')[0] if quality_match else ""
+        info["Quality"] = quality_match.group(
+            1).split('/')[0] if quality_match else ""
 
         # Extract Signal Level
-        signal_level_match = re.search(r'Signal level=([\-\d]+ dBm)', cell_data)
-        info["SignalLevel"] = signal_level_match.group(1).split(' ')[0] if signal_level_match else ""
+        signal_level_match = re.search(
+            r'Signal level=([\-\d]+ dBm)', cell_data)
+        info["SignalLevel"] = signal_level_match.group(
+            1).split(' ')[0] if signal_level_match else ""
 
         # Extract Mode
         mode_match = re.search(r'Mode:(\w+)', cell_data)

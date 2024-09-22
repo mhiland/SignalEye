@@ -1,14 +1,15 @@
 
+from json_schema import schema
 import pytest
 from jsonschema import validate, exceptions, ValidationError
-import sys, os
+import sys
+import os
 import json
 os.environ['UNIT_TESTING'] = 'True'
 test_file_dir = os.path.dirname(os.path.abspath(__file__))
 module_path = os.path.abspath(os.path.join(
     test_file_dir, '../backend/wifi_monitor'))
 sys.path.insert(0, module_path)
-from json_schema import schema
 
 valid_data = [
     {
@@ -67,6 +68,7 @@ def test_valid_data_no_exception_raised():
 def test_invalid_data_exception_raised():
     with pytest.raises(ValidationError):
         validate(instance=invalid_data, schema=schema)
+
 
 def test_current_data_if_exists():
     data_file = '/var/log/wifi_monitor/persistent_networks.json'

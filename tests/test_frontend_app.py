@@ -1,3 +1,4 @@
+from app import app
 import pytest
 import sys
 import os
@@ -6,7 +7,7 @@ os.environ['UNIT_TESTING'] = 'True'
 test_file_dir = os.path.dirname(os.path.abspath(__file__))
 module_path = os.path.abspath(os.path.join(test_file_dir, '../frontend'))
 sys.path.insert(0, module_path)
-from app import app
+
 
 @pytest.fixture
 def client():
@@ -15,6 +16,7 @@ def client():
     with app.test_client() as client:
         yield client
 
+
 def test_index_route(client):
     """Test the index route of the application."""
     response = client.get('/')
@@ -22,6 +24,7 @@ def test_index_route(client):
     assert response.status_code == 200
     assert len(response.data) > 0
     assert b'<!DOCTYPE html>' in response.data
+
 
 def test_download_route(client):
     """Test the download route of the application."""

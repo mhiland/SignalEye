@@ -5,3 +5,4 @@ pre-commit
 pytest
 jsonschema
 pytz
+autopep8

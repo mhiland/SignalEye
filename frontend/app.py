@@ -1,20 +1,23 @@
+from json_schema import schema
 from flask import Flask, render_template, send_file, jsonify
 from datetime import datetime, timedelta
 import json
-import os, sys, pytz
+import os
+import sys
+import pytz
 import io
 from jsonschema import validate, ValidationError
 test_file_dir = os.path.dirname(os.path.abspath(__file__))
 module_path = os.path.abspath(os.path.join(
     test_file_dir, '../backend/wifi_monitor'))
 sys.path.insert(0, module_path)
-from json_schema import schema
 
 app = Flask(__name__)
 
 # Load JSON data
 DATA_FILE = '/var/log/wifi_monitor/persistent_networks.json'
 LOG_FILE = '/var/log/wifi_monitor/wifi_monitor.log'
+
 
 def get_network_data():
     if os.path.exists(DATA_FILE):
@@ -81,7 +84,8 @@ def data():
     networks_data = get_network_data()
     for network in networks_data:
         last_seen_str = network.get("LastSeen")
-        last_seen_time = datetime.strptime(last_seen_str, "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC)
+        last_seen_time = datetime.strptime(
+            last_seen_str, "%Y-%m-%d %H:%M:%S").replace(tzinfo=pytz.UTC)
 
         if last_seen_time >= last_24hrs:
             recent_networks.append(network)
@@ -132,7 +136,8 @@ def logs():
 def spectrum():
     networks_data = get_network_data()
     spectrum_data = process_data(networks_data)
-    return render_template('spectrum.html', spectrum_data=json.dumps(spectrum_data))
+    return render_template('spectrum.html',
+                           spectrum_data=json.dumps(spectrum_data))
 
 
 if __name__ == '__main__':

@@ -50,11 +50,13 @@ class OUILookup:
                     except json.JSONDecodeError:
                         self.exact_match_dict = {}
             except Exception as e:
-                logging.debug(f"Error loading exact matches from {file_path}: {e}")
+                logging.debug(
+                    f"Error loading exact matches from {file_path}: {e}")
         else:
             try:
                 with open(file_path, 'w', encoding='utf-8') as file:
-                    json.dump({}, file)  # Create an empty JSON file if it doesn't exist
+                    # Create an empty JSON file if it doesn't exist
+                    json.dump({}, file)
             except Exception as e:
                 logging.debug(f"Error creating exact match file: {e}")
 
@@ -62,7 +64,8 @@ class OUILookup:
     def write_exact_match(self, mac_address, manufacturer, essid=None):
         mac_address = mac_address.upper()
         if mac_address not in self.exact_match_dict:
-            self.exact_match_dict[mac_address] = {'manufacturer': manufacturer, 'essid': essid}
+            self.exact_match_dict[mac_address] = {
+                'manufacturer': manufacturer, 'essid': essid}
             try:
                 with open(self.exact_match_file, 'w', encoding='utf-8') as file:
                     json.dump(self.exact_match_dict, file, indent=4)
@@ -79,7 +82,8 @@ class OUILookup:
             str2 = str2.replace(':', '')
         return SequenceMatcher(None, str1, str2).ratio()
 
-    # Lookup the manufacturer using the parsed OUI database or exact match variations
+    # Lookup the manufacturer using the parsed OUI database or exact match
+    # variations
     def lookup_manufacturer(self, mac_address, essid=None):
         mac_address = mac_address.upper()
         mac_prefix = mac_address[:8]
@@ -98,10 +102,12 @@ class OUILookup:
             stored_manufacturer = details['manufacturer']
             stored_essid = details.get('essid', '')
             mac_similarity_score = self.similarity(mac_address, stored_mac)
-            essid_similarity_score = self.similarity(essid, stored_essid) if essid and stored_essid else 0
+            essid_similarity_score = self.similarity(
+                essid, stored_essid) if essid and stored_essid else 0
 
             # Combined score, equally weighted
-            combined_score = (mac_similarity_score + essid_similarity_score) / 2
+            combined_score = (
+                mac_similarity_score + essid_similarity_score) / 2
 
             if combined_score > highest_score:
                 highest_score = combined_score

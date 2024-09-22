@@ -50,9 +50,11 @@ def save_training_data(networks):
             bssid = bssid_match.group(1)
             freq = freq_match.group(1)
 
-            # Create a unique filename based on the hash of ESSID, BSSID, and Frequency
+            # Create a unique filename based on the hash of ESSID, BSSID, and
+            # Frequency
             unique_str = f"{essid}-{bssid}-{freq}"
-            unique_filename = hashlib.sha256(unique_str.encode()).hexdigest() + '.nd'
+            unique_filename = hashlib.sha256(
+                unique_str.encode()).hexdigest() + '.nd'
             file_path = os.path.join(TRAINING_DIR, unique_filename)
 
             # If the file already exists, skip writing
