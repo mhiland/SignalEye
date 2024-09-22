@@ -1,5 +1,3 @@
-
-from json_schema import schema
 import pytest
 from jsonschema import validate, exceptions, ValidationError
 import sys
@@ -10,6 +8,7 @@ test_file_dir = os.path.dirname(os.path.abspath(__file__))
 module_path = os.path.abspath(os.path.join(
     test_file_dir, '../backend/wifi_monitor'))
 sys.path.insert(0, module_path)
+from json_schema import schema
 
 valid_data = [
     {

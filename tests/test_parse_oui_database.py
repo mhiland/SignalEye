@@ -1,4 +1,3 @@
-from parse_oui_database import OUILookup
 import pytest
 import sys
 import os
@@ -7,7 +6,7 @@ test_file_dir = os.path.dirname(os.path.abspath(__file__))
 module_path = os.path.abspath(os.path.join(
     test_file_dir, '../backend/wifi_monitor'))
 sys.path.insert(0, module_path)
-
+from parse_oui_database import OUILookup
 
 def test_similarity_mac():
     mac1 = "B8:4E:3F:7B:03:51"

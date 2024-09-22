@@ -1,4 +1,3 @@
-from update_networks_list import update_networks_list
 import pytest
 from unittest.mock import patch
 from datetime import datetime
@@ -11,7 +10,7 @@ module_path = os.path.abspath(
         test_file_dir,
         '../backend/wifi_monitor'))
 sys.path.insert(0, module_path)
-
+from update_networks_list import update_networks_list
 
 @pytest.fixture
 def setup_networks():
