@@ -1,43 +1,47 @@
 
-# Developing Code
+<p align="center">
+  <img src="images/seye-logo.svg" alt="SeyE Logo" width="200"/>
+</p>
 
-## Setup
-Install runtime requirements
-> sudo apt-get update
+# About
 
-> sudo apt-get install docker-compose
+> Detect malicious actors before they gain access to your network.
 
-> sudo usermod -aG docker $USER
+Signal Eye (pronounced sigh) is a signals intelligence tool designed to run on a Raspberry Pi, continuously monitoring your local wireless environment. It scans for suspicious activity in real-time, detecting anomalous behavior, rogue access points, and potential security threats, including attacks initiated by Pineapple-like devices. With Signal Eye, you gain a powerful tool to safeguard your wireless network, providing early detection of intrusions and ensuring robust network security.
 
-> newgrp docker
+## Key Features
 
-> sudo pip install -r requirements.txt
+- **Real-time Monitoring**: Constantly observes the WiFi spectrum for any unusual behavior or unauthorized devices.
+- **Device Identification**: Utilizes advanced algorithms to differentiate between legitimate and malicious access points.
+- **Data Logging**: Maintains detailed logs of all activities for further analysis.
+- **User-friendly Interface**: Provides an intuitive dashboard for easy monitoring and management of network security.
 
-> pre-commit install
+## Use Cases
 
-## Docker
+- **Home Network Security**: Keep your home WiFi safe from unauthorized users and potential cyber threats.
+- **Office Environment**: Ensure a secure workplace by preventing access to rogue devices and maintaining the integrity of your corporate network.
 
-### Docker Compose
-> docker-compose up -d
+## Technical Details
 
-If wanting to change the wireless interface use environment variable, wlan=1 == wlan1. default: 0
-> wlan=1 docker-compose up -d --build
+- **Platform**: Raspberry Pi 3B+/5, Firewalla
+- **Programming Languages**: Python, Bash
+- **Dependencies**: `iwlist`
 
-### Debug
-> docker exec -it wifi_monitor_container /bin/bash
+## Installation and Setup
 
-## Committing Code
+1. Download the latest Docker image:
+    ```
+    docker pull ghcr.io/mhiland/signaleye:latest
+    ```
+2. Initialize the Docker container:
+    ```
+    docker run --net=host --cap-add=NET_ADMIN --cap-add=NET_RAW -d --name signal_eye_container -v /var/log/wifi_monitor:/app/backend/wifi_monitor/logs ghcr.io/mhiland/signaleye:latest
+    ```
 
-### Test
-> pytest
+## [Contribution Guidelines](CONTRIBUTING.md)
 
-### Pylint
-Run pylint manually
-> pylint $(git ls-files '*.py')
+Follow our [contribution guidelines](CONTRIBUTING.md) to ensure proper code style and testing practices.
 
-### autopep8
-autopep8 can automatically fix trailing whitespace issues along with other PEP 8 formatting issues.
-> autopep8 --in-place --aggressive --aggressive --recursive .
+## [Security Policy](SECURITY.md)
 
-### Pre-Commit Validation
-> pre-commit run --all-files
+Refer to our [security policy](SECURITY.md) for details on how to report vulnerabilities or security issues.
