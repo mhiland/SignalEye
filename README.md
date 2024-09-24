@@ -38,10 +38,10 @@ Signal Eye (pronounced sigh) is a signals intelligence tool designed to run on a
     docker run --net=host --cap-add=NET_ADMIN --cap-add=NET_RAW -d --name signal_eye_container -v /var/log/wifi_monitor:/app/backend/wifi_monitor/logs ghcr.io/mhiland/signaleye:latest
     ```
 
-## [Contribution Guidelines](CONTRIBUTING.md)
+## Contribution Guidelines
 
 Follow our [contribution guidelines](CONTRIBUTING.md) to ensure proper code style and testing practices.
 
-## [Security Policy](SECURITY.md)
+## Security Policy
 
 Refer to our [security policy](SECURITY.md) for details on how to report vulnerabilities or security issues.
