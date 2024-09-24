@@ -209,31 +209,42 @@ class NetworkScanner(threading.Thread):
 
     def check_duplicate_ssids(self):
         with self.lock:
-            # Collect addresses by SSID
+            # Collect addresses by SSID and frequency band
             unique_addresses_by_ssid = {}
+
             for net_data in self.networks:
                 network = NetworkFactory.create_network(net_data)
                 ssid = network.get_ssid()
                 address = network.get_address()
+                frequency = network.get_frequency()
 
                 # Skip empty SSIDs
                 if not ssid:
                     continue
 
+                # Determine the frequency band (2.4 GHz or 5 GHz)
+                frequency_band = '2.4GHz' if frequency.startswith('2') else '5GHz'
+
                 if ssid not in unique_addresses_by_ssid:
-                    unique_addresses_by_ssid[ssid] = set()
+                    unique_addresses_by_ssid[ssid] = {}
 
-                unique_addresses_by_ssid[ssid].add(address)
+                if frequency_band not in unique_addresses_by_ssid[ssid]:
+                    unique_addresses_by_ssid[ssid][frequency_band] = set()
 
-            # Check for duplicate SSIDs across different addresses
-            for ssid, addresses in unique_addresses_by_ssid.items():
-                if len(addresses) > 1:  # More than one address using the same SSID
-                    for net_data in self.networks:
-                        network = NetworkFactory.create_network(net_data)
-                        if network.get_ssid() == ssid and network.get_address() in addresses:
-                            network.mark_suspicious('SSID spoofing detected')
-                            self.observer.update(network.network)
-                            self.seen_addresses.add(network.get_address())
+                unique_addresses_by_ssid[ssid][frequency_band].add(address)
+
+            # Check for duplicate SSIDs across different addresses within the same frequency band
+            for ssid, frequency_bands in unique_addresses_by_ssid.items():
+                for band, addresses in frequency_bands.items():
+                    if len(addresses) > 1:  # More than one address using the same SSID and frequency band
+                        for net_data in self.networks:
+                            network = NetworkFactory.create_network(net_data)
+                            if (network.get_ssid() == ssid and
+                                network.get_address() in addresses and
+                                (network.get_frequency().startswith('2') if band == '2.4GHz' else network.get_frequency().startswith('5'))):
+                                network.mark_suspicious('SSID spoofing detected')
+                                self.observer.update(network.network)
+                                self.seen_addresses.add(network.get_address())
 
 
 # Usage
