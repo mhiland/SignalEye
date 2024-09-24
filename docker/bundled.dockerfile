@@ -23,6 +23,9 @@ RUN pip install --no-cache-dir -r /app/frontend/requirements.txt
 # Stage 3: Runtime
 FROM python:3.11-slim
 
+LABEL org.opencontainers.image.description="Signal Eye is a signals intelligence tool designed to run on a Raspberry Pi, continuously monitoring your local wireless environment."
+LABEL org.opencontainers.image.licenses="GPL-3.0"
+
 RUN apt-get update && \
     apt-get install -y iw wireless-tools iproute2 net-tools && \
     rm -rf /var/lib/apt/lists/*
