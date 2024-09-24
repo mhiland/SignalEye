@@ -1,5 +1,7 @@
 import os
 import subprocess
+import logging
+import logging_config
 
 
 def scan_wifi():
@@ -10,8 +12,11 @@ def scan_wifi():
             ['iwlist', interface, 'scan'], capture_output=True, text=True, timeout=30)
         return result.stdout
     except subprocess.TimeoutExpired:
-        print("iwlist scan timed out.")
-        return ""
+        logging.warning("iwlist scan timed out.")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+    return ""
+
 
 
 if __name__ == "__main__":
