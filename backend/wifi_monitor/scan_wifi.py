@@ -2,19 +2,45 @@ import os
 import subprocess
 import logging
 import logging_config
-
+import time
 
 def scan_wifi():
-    try:
-        wlan_env = os.getenv('WLAN', '0')
-        interface = f"wlan{wlan_env}"
-        result = subprocess.run(
-            ['iwlist', interface, 'scan'], capture_output=True, text=True, timeout=30)
-        return result.stdout
-    except subprocess.TimeoutExpired:
-        logging.warning("iwlist scan timed out.")
-    except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
+    attempt = 0
+    max_attempts = 3
+    sleep_duration_seconds = 5
+
+    wlan_env = os.getenv('WLAN', '0')
+    interface = f"wlan{wlan_env}"
+
+    while attempt < max_attempts:
+        try:
+            result = subprocess.run(
+                ['iwlist', interface, 'scan'], capture_output=True, text=True, timeout=30)
+            if result.returncode == 255:
+                attempt += 1
+                if attempt < max_attempts:
+                    time.sleep(sleep_duration_seconds)
+                    continue
+            elif result.returncode != 0:
+                logging.warning(f"iwlist scan failed with return code {result.returncode}.")
+                return ""
+
+            return result.stdout
+
+        except subprocess.TimeoutExpired:
+            logging.warning("iwlist scan timed out.")
+            attempt += 1
+            if attempt < max_attempts:
+                time.sleep(sleep_duration_seconds)
+                continue
+
+        except Exception as e:
+            logging.error(f"An unexpected error occurred: {e}")
+            attempt += 1
+            if attempt < max_attempts:
+                time.sleep(sleep_duration_seconds)
+                continue
+
     return ""
 
 
